@@ -24,11 +24,14 @@ let inMemoryConfig = {
 module.exports = (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-password");
 
   if (req.method === "OPTIONS") return res.status(200).end();
 
   if (req.method === "POST") {
+    if (req.headers["x-admin-password"] !== "aylool@#5") {
+      return res.status(401).json({ error: "Unauthorized: admin password required" });
+    }
     try {
       const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
       if (body.adsense && typeof body.adsense === "object") {

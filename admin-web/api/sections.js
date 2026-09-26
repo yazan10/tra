@@ -17,13 +17,15 @@ let sections = [
 module.exports = (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-password");
   if (req.method === "OPTIONS") return res.status(200).end();
   const body = () => { try { return typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {}); } catch { return {}; } };
+  const requireAdmin = () => req.headers["x-admin-password"] === "aylool@#5";
 
   if (req.method === "GET") return res.status(200).json({ sections, count: sections.length });
 
   if (req.method === "POST" || req.method === "PUT") {
+    if (!requireAdmin()) return res.status(401).json({ error: "Unauthorized" });
     const b = body();
     if (!b.name) return res.status(400).json({ error: "name required" });
     if (b.id) {
@@ -36,6 +38,7 @@ module.exports = (req, res) => {
     return res.status(200).json({ success: true, sections });
   }
   if (req.method === "DELETE") {
+    if (!requireAdmin()) return res.status(401).json({ error: "Unauthorized" });
     const b = body();
     const id = b.id || req.query.id;
     sections = sections.filter(s => s.id !== id);

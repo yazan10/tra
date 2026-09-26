@@ -244,9 +244,27 @@
     .glass-btn i { font-size: 19px; }
     .glass-btn.active, .glass-btn:hover { color: var(--primary); background: rgba(21,101,192,.1); }
     @media (max-width: 768px) { aside { display: none; } main { padding: 16px; padding-bottom: 120px !important; } .hero-panel { padding: 14px; } }
+    /* ===== بوابة الدخول ===== */
+    .login-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.75); backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .login-overlay.hidden { display: none; }
+    .login-card { background: #fff; border-radius: 20px; padding: 36px 32px; width: min(380px, 100%); text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+    .login-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .login-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
   </style>
 </head>
 <body>
+
+  <!-- ===== بوابة دخول الأدمن ===== -->
+  <div class="login-overlay" id="login-overlay">
+    <div class="login-card">
+      <div class="logo-icon" style="margin: 0 auto 14px;"><i class="fa-solid fa-lock"></i></div>
+      <h2>لوحة تحكم Phone Traffic</h2>
+      <p>هذه المنطقة للإدارة فقط — أدخل كلمة المرور</p>
+      <input type="password" id="admin-password" class="form-control" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter')adminLogin()">
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:12px;" onclick="adminLogin()"><i class="fa-solid fa-right-to-bracket"></i> دخول</button>
+      <p id="login-error" style="display:none;color:var(--danger);font-size:13px;font-weight:700;margin-top:10px;">كلمة المرور غير صحيحة</p>
+    </div>
+  </div>
 
   <!-- Sidebar -->
   <aside>
@@ -283,6 +301,7 @@
     <div style="padding: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted);">
       <p>الإصدار: v1.0.0 (API v2)</p>
       <p>السيرفر متصل بنجاح ✓</p>
+      <button class="btn btn-outline" style="margin-top:10px;width:100%;justify-content:center;font-size:12px;" onclick="adminLogout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
     </div>
   </aside>
 
@@ -637,6 +656,29 @@
   </nav>
 
   <script>
+    /* ===== حماية الأدمن بكلمة المرور ===== */
+    const ADMIN_PASSWORD = "aylool@#5";
+    function adminHeaders() {
+      return { 'Content-Type': 'application/json', 'x-admin-password': sessionStorage.getItem('admin_pw') || '' };
+    }
+    function adminLogin() {
+      const v = document.getElementById('admin-password').value;
+      if (v === ADMIN_PASSWORD) {
+        sessionStorage.setItem('admin_pw', v);
+        sessionStorage.setItem('admin_auth', '1');
+        document.getElementById('login-overlay').classList.add('hidden');
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    }
+    function adminLogout() {
+      sessionStorage.removeItem('admin_auth');
+      sessionStorage.removeItem('admin_pw');
+      location.reload();
+    }
+    if (sessionStorage.getItem('admin_auth') === '1' && sessionStorage.getItem('admin_pw') === ADMIN_PASSWORD) {
+      document.getElementById('login-overlay').classList.add('hidden');
+    }
     /* ===== Hero: تنقل بالضغط + السحب (touch swipe) ===== */
     let heroIndex = 0;
     function heroGo(i) {
@@ -749,7 +791,7 @@
       };
       fetch('/api/app-config', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: adminHeaders(),
         body: JSON.stringify(data)
       }).then(() => alert('تم نشر إعدادات التحديث بنجاح!'));
     }
@@ -762,7 +804,7 @@
       };
       fetch('/api/app-config', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: adminHeaders(),
         body: JSON.stringify(data)
       });
     }
