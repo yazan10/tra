@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Google AdSense: Publisher pub-4752417544013096 / Customer 9947688120 -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4752417544013096" crossorigin="anonymous"></script>
+  <meta name="google-adsense-account" content="ca-pub-4752417544013096">
   <style>
     :root {
       --primary: #1565C0;
@@ -221,6 +224,26 @@
     .badge-info { background: #E0F2FE; color: #0369A1; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+    /* ===== Hero: قسمين الخدمات / المنشورات (ضغط + سحب) ===== */
+    .hero-tabs { display: flex; gap: 8px; background: #EFF6FF; border: 1px solid var(--border); padding: 6px; border-radius: 16px; width: fit-content; margin-bottom: 14px; }
+    .hero-tab { padding: 10px 28px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; color: var(--text-muted); border: none; background: transparent; transition: 0.2s; }
+    .hero-tab.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(21,101,192,.35); }
+    .hero-swipe { overflow: hidden; border-radius: 18px; border: 1px solid var(--border); background: #fff; touch-action: pan-y; }
+    .hero-track { display: flex; transition: transform .35s ease; width: 200%; }
+    .hero-panel { width: 50%; flex-shrink: 0; padding: 22px; }
+    .svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 12px; }
+    .svc-card { background: #F8FAFC; border: 1px solid var(--border); border-radius: 14px; padding: 14px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s; }
+    .svc-card:hover { background: #EFF6FF; border-color: var(--primary); transform: translateY(-2px); }
+    .svc-card i { font-size: 22px; color: var(--primary); display: block; margin-bottom: 8px; }
+    .post-row { display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 12px; margin-top: 10px; background: #F8FAFC; }
+    .post-row img { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; background: #E2E8F0; }
+    /* ===== شريط سفلي زجاجي عائم (لا يغطي المحتوى) ===== */
+    main { padding-bottom: 120px !important; }
+    .glass-bottom-bar { position: fixed; bottom: 16px; right: 50%; transform: translateX(50%); width: min(560px, calc(100% - 32px)); background: rgba(255,255,255,.72); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); border: 1px solid rgba(255,255,255,.6); box-shadow: 0 8px 32px rgba(13,71,161,.18); border-radius: 24px; display: flex; justify-content: space-around; align-items: center; padding: 10px 8px; z-index: 50; }
+    .glass-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; font-weight: 700; color: var(--text-muted); background: transparent; border: none; cursor: pointer; padding: 8px 14px; border-radius: 16px; transition: .2s; text-decoration: none; }
+    .glass-btn i { font-size: 19px; }
+    .glass-btn.active, .glass-btn:hover { color: var(--primary); background: rgba(21,101,192,.1); }
+    @media (max-width: 768px) { aside { display: none; } main { padding: 16px; padding-bottom: 120px !important; } .hero-panel { padding: 14px; } }
   </style>
 </head>
 <body>
@@ -272,6 +295,29 @@
       </div>
       <button class="btn btn-primary" onclick="syncToServer()"><i class="fa-solid fa-cloud-arrow-up"></i> حفظ ومزامنة مع التطبيق</button>
     </header>
+
+    <!-- ===== الواجهة الرئيسية: قسمان (الخدمات / المنشورات) تنقل بالضغط أو السحب ===== -->
+    <div class="card" style="padding: 20px;">
+      <div class="hero-tabs">
+        <button class="hero-tab active" id="hero-tab-svc" onclick="heroGo(0)">🛠️ الخدمات</button>
+        <button class="hero-tab" id="hero-tab-posts" onclick="heroGo(1)">📰 المنشورات</button>
+      </div>
+      <div class="hero-swipe" id="hero-swipe">
+        <div class="hero-track" id="hero-track">
+          <div class="hero-panel" id="hero-panel-svc">
+            <h3 style="font-size:17px;font-weight:700;">أقسام الخدمات الفنية (12 قسماً)</h3>
+            <p style="font-size:12px;color:var(--text-muted);">اضغط على أي خدمة لإدارتها — اسحب يمين/يسار للتنقل بين الخدمات والمنشورات</p>
+            <div class="svc-grid" id="hero-svc-grid"></div>
+          </div>
+          <div class="hero-panel" id="hero-panel-posts">
+            <h3 style="font-size:17px;font-weight:700;">أحدث المنشورات والمقالات</h3>
+            <p style="font-size:12px;color:var(--text-muted);">منشورات المدونة: <a href="https://yaz-blog.blogspot.com/" target="_blank" style="color:var(--primary);font-weight:700;">yaz-blog.blogspot.com</a> — اسحب للعودة للخدمات</p>
+            <div id="hero-posts-list"></div>
+            <button class="btn btn-primary" style="margin-top:12px;" onclick="switchTab('tab-posts', document.querySelectorAll('.nav-item')[4])"><i class="fa-solid fa-plus"></i> إدارة ونشر المنشورات</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Tab 1: Overview -->
     <section id="tab-overview" class="tab-content active">
@@ -581,8 +627,89 @@
     </section>
   </main>
 
+  <!-- ===== شريط سفلي زجاجي عائم بحواف منحنية ===== -->
+  <nav class="glass-bottom-bar" id="glass-bar">
+    <button class="glass-btn active" onclick="glassNav('tab-overview', this)"><i class="fa-solid fa-house"></i>الرئيسية</button>
+    <button class="glass-btn" onclick="glassNav('tab-sections', this)"><i class="fa-solid fa-cubes"></i>الأقسام</button>
+    <button class="glass-btn" onclick="glassNav('tab-posts', this)"><i class="fa-solid fa-newspaper"></i>المنشورات</button>
+    <button class="glass-btn" onclick="glassNav('tab-reports', this)"><i class="fa-solid fa-bug"></i>التقارير</button>
+    <a class="glass-btn" href="https://yaz-blog.blogspot.com/" target="_blank"><i class="fa-solid fa-blog"></i>المدونة</a>
+  </nav>
+
   <script>
-    function switchTab(tabId) {
+    /* ===== Hero: تنقل بالضغط + السحب (touch swipe) ===== */
+    let heroIndex = 0;
+    function heroGo(i) {
+      heroIndex = i;
+      document.getElementById('hero-track').style.transform = i === 0 ? 'translateX(0)' : 'translateX(50%)';
+      document.getElementById('hero-tab-svc').classList.toggle('active', i === 0);
+      document.getElementById('hero-tab-posts').classList.toggle('active', i === 1);
+    }
+    (function enableHeroSwipe() {
+      const el = document.getElementById('hero-swipe');
+      let sx = 0, dx = 0, dragging = false;
+      const isRTL = true;
+      el.addEventListener('touchstart', e => { sx = e.touches[0].clientX; dragging = true; }, {passive:true});
+      el.addEventListener('touchend', e => {
+        if (!dragging) return; dragging = false;
+        dx = e.changedTouches[0].clientX - sx;
+        if (Math.abs(dx) > 50) {
+          // RTL: السحب لليسار = التالي
+          if (dx < 0) heroGo(heroIndex === 0 ? 1 : 0);
+          else heroGo(heroIndex === 1 ? 0 : 1);
+        }
+      });
+      el.addEventListener('mousedown', e => { sx = e.clientX; dragging = true; });
+      el.addEventListener('mouseup', e => {
+        if (!dragging) return; dragging = false;
+        dx = e.clientX - sx;
+        if (Math.abs(dx) > 60) heroGo(heroIndex === 0 ? 1 : 0);
+      });
+    })();
+    function glassNav(tabId, btn) {
+      document.querySelectorAll('.glass-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      const navItems = document.querySelectorAll('.nav-item');
+      const map = {'tab-overview':0,'tab-updates':1,'tab-broadcast':2,'tab-sections':3,'tab-posts':4,'tab-adsense':5,'tab-reports':6};
+      switchTab(tabId, navItems[map[tabId]]);
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+    /* ===== تحميل الأقسام والمنشورات من السيرفر (مع fallback محلي) ===== */
+    const DEFAULT_SERVICES = [
+      {id:'screens', name:'مقارنة الشاشات', icon:'fa-display'},
+      {id:'devices', name:'مقارنة الأجهزة', icon:'fa-mobile-screen'},
+      {id:'test_points', name:'تيست بوينت', icon:'fa-microchip'},
+      {id:'software', name:'دورات سوفت وير', icon:'fa-graduation-cap'},
+      {id:'screen_compat', name:'توافق الشاشات', icon:'fa-clone'},
+      {id:'systems', name:'أوضاع النظام', icon:'fa-gears'},
+      {id:'device_models', name:'موديلات الأجهزة', icon:'fa-barcode'},
+      {id:'imei_check', name:'فحص IMEI', icon:'fa-shield-halved'},
+      {id:'rom_downloads', name:'تحميل الرومات', icon:'fa-download'},
+      {id:'secret_codes', name:'الأكواد السرية', icon:'fa-key'},
+      {id:'software_tools', name:'أدوات سوفت وير', icon:'fa-screwdriver-wrench'},
+      {id:'dump_collection', name:'ملفات الدامب', icon:'fa-database'}
+    ];
+    async function loadHeroData() {
+      let services = DEFAULT_SERVICES, posts = [];
+      try {
+        const r = await fetch('/api/sections'); if (r.ok) { const j = await r.json(); if (j.sections?.length) services = j.sections; }
+      } catch(e) {}
+      try {
+        const r = await fetch('/api/posts'); if (r.ok) { const j = await r.json(); if (j.posts?.length) posts = j.posts; }
+      } catch(e) {}
+      document.getElementById('hero-svc-grid').innerHTML = services.map(s =>
+        `<div class="svc-card" onclick="glassNav('tab-sections')"><i class="fa-solid ${s.icon||'fa-cube'}"></i>${s.name}</div>`).join('');
+      if (!posts.length) posts = [
+        {title:'حل مشكلة موت Poco X3 Pro وشبلنة المعالج', category:'هاردوير', views:2450},
+        {title:'فك حماية Mi Cloud بدون بوكسات', category:'سوفت وير', views:3890},
+        {title:'أكواد التوربو سيم والـ ICCID للآيفون', category:'شبكات', views:5120}
+      ];
+      document.getElementById('hero-posts-list').innerHTML = posts.slice(0,5).map(p =>
+        `<div class="post-row"><div style="width:48px;height:48px;border-radius:10px;background:#EFF6FF;display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:20px;"><i class="fa-solid fa-newspaper"></i></div><div><strong style="font-size:13px;">${p.title}</strong><br><span style="font-size:11px;color:var(--text-muted);">${p.category||'عام'} • ${p.views||0} مشاهدة</span></div></div>`).join('');
+    }
+    loadHeroData();
+
+    function switchTab(tabId, navEl) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
@@ -601,7 +728,8 @@
         document.getElementById('page-heading').innerText = headings[tabId][0];
         document.getElementById('page-subheading').innerText = headings[tabId][1];
       }
-      event.currentTarget.classList.add('active');
+      if (navEl) navEl.classList.add('active');
+      else if (typeof event !== 'undefined' && event.currentTarget) event.currentTarget.classList.add('active');
     }
 
     function syncToServer() {
