@@ -33,11 +33,11 @@ fun ScreenCompatibilityScreen(
 
     val allCompat = TechnicianDataProvider.screenCompatibilities
     var searchQuery by remember { mutableStateOf("") }
-    var selectedBrand by remember { mutableStateOf(DeviceBrand.ALL) }
+    var selectedBrand by remember { mutableStateOf(DeviceBrand.XIAOMI) }
 
     val filteredList = remember(searchQuery, selectedBrand) {
         allCompat.filter { item ->
-            val matchBrand = (selectedBrand == DeviceBrand.ALL) || (item.brand == selectedBrand)
+            val matchBrand = (item.brand == selectedBrand)
             val matchQuery = searchQuery.isBlank() ||
                 item.primaryModel.contains(searchQuery, ignoreCase = true) ||
                 item.compatibleModels.any { it.contains(searchQuery, ignoreCase = true) } ||
@@ -111,7 +111,7 @@ fun ScreenCompatibilityScreen(
                             )
                             Text(
                                 text = "شاشات تركب على أكثر من جهاز 100% لتوفير قطع الغيار",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                             )
                         }
                     }
@@ -142,7 +142,6 @@ fun ScreenCompatibilityScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     val brands = listOf(
-                        DeviceBrand.ALL to "جميع الماركات",
                         DeviceBrand.XIAOMI to "شاومي",
                         DeviceBrand.SAMSUNG to "سامسونج",
                         DeviceBrand.OPPO to "أوبو وريلمي",
@@ -164,6 +163,11 @@ fun ScreenCompatibilityScreen(
             }
 
             // Cards
+            // Inline Ad Placement (AdSense)
+            item {
+                AdBannerPlaceholder(adSlotName = "إعلان - توافق الشاشات")
+            }
+
             items(filteredList, key = { it.id }) { item ->
                 Card(
                     shape = RoundedCornerShape(14.dp),
@@ -261,7 +265,7 @@ fun ScreenCompatibilityScreen(
                                     text = "حالة التركيب مع الشاسيه / الفلاتة:",
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF64748B)
+                                        color = Color.Black
                                     )
                                 )
                                 Text(
@@ -288,7 +292,7 @@ fun ScreenCompatibilityScreen(
                             Text(
                                 text = item.importantNotes,
                                 style = MaterialTheme.typography.bodySmall.copy(
-                                    color = Color(0xFF475569),
+                                    color = Color.Black,
                                     fontSize = 11.sp
                                 )
                             )

@@ -13,7 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.TechnicianDataProvider
 import com.example.ui.components.AdBannerPlaceholder
+import com.example.ui.components.SectionFilterStrip
 import com.example.ui.theme.ColorCategoryDumps
 import com.example.ui.theme.PrimaryBlue
 
@@ -34,6 +35,19 @@ fun DumpCollectionScreen(
     BackHandler { onBack() }
     val context = LocalContext.current
     val dumps = TechnicianDataProvider.dumpCollection
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedSection by remember { mutableStateOf("eMMC") }
+
+    val filteredDumps = remember(searchQuery, selectedSection) {
+        dumps.filter { dump ->
+            val matchSection = dump.memoryType.contains(selectedSection)
+            val matchQuery = searchQuery.isBlank() ||
+                dump.title.contains(searchQuery, ignoreCase = true) ||
+                dump.deviceModel.contains(searchQuery, ignoreCase = true) ||
+                dump.description.contains(searchQuery, ignoreCase = true)
+            matchSection && matchQuery
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -100,7 +114,7 @@ fun DumpCollectionScreen(
                             )
                             Text(
                                 text = "ملفات إحياء الأجهزة بعد تغيير الذواكر وإصلاح البوت الأولي Boot1/Boot2 و UserArea",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                             )
                         }
                     }
@@ -108,7 +122,39 @@ fun DumpCollectionScreen(
             }
 
             // Dump cards
-            items(dumps, key = { it.id }) { dump ->
+            // Search Bar
+            item {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { Text("ابحث في الدامبات (الموديل أو نوع الذاكرة)...") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = ColorCategoryDumps) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            // Sections Strip
+            item {
+                SectionFilterStrip(
+                    sections = listOf("eMMC", "UFS 2.2", "UFS 3.1", "UFS 4.0"),
+                    selected = selectedSection,
+                    onSelect = { selectedSection = it },
+                    accentColor = ColorCategoryDumps
+                )
+            }
+
+            // Inline Ad Placement (AdSense)
+            item {
+                AdBannerPlaceholder(adSlotName = "إعلان - قسم ملفات الدامب")
+            }
+
+            items(filteredDumps, key = { it.id }) { dump ->
                 val isSpecial = dump.isHighlighted
 
                 Card(
@@ -164,14 +210,14 @@ fun DumpCollectionScreen(
                         )
                         Text(
                             text = "المعالج والذاكرة: ${dump.cpuAndChipset} | ${dump.memoryType}",
-                            style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF64748B))
+                            style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = dump.description,
                             style = MaterialTheme.typography.bodySmall.copy(
-                                color = Color(0xFF334155),
+                                color = Color.Black,
                                 lineHeight = 19.sp
                             )
                         )

@@ -94,7 +94,7 @@ fun InAppBrowserScreen(
                                 text = domain,
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontSize = 11.sp,
-                                    color = Color(0xFF64748B)
+                                    color = Color.Black
                                 ),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -139,7 +139,7 @@ fun InAppBrowserScreen(
                         Icon(
                             imageVector = Icons.Default.ContentCopy,
                             contentDescription = "نسخ الرابط",
-                            tint = Color(0xFF475569)
+                            tint = Color.Black
                         )
                     }
                     // Open in external browser
@@ -154,7 +154,7 @@ fun InAppBrowserScreen(
                         Icon(
                             imageVector = Icons.Default.OpenInBrowser,
                             contentDescription = "فتح في المتصفح الخارجي",
-                            tint = Color(0xFF475569)
+                            tint = Color.Black
                         )
                     }
                 },
@@ -195,7 +195,7 @@ fun InAppBrowserScreen(
                         Icon(
                             imageVector = Icons.Default.CloudOff,
                             contentDescription = null,
-                            tint = Color(0xFF94A3B8),
+                            tint = Color.Black,
                             modifier = Modifier.size(64.dp)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
@@ -206,7 +206,7 @@ fun InAppBrowserScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "يرجى التحقق من اتصال الإنترنت أو المحاولة مرة أخرى.",
-                            style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFF64748B))
+                            style = MaterialTheme.typography.bodyMedium.copy(color = Color.Black)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(

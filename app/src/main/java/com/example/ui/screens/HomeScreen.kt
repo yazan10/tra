@@ -20,6 +20,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.R
 import com.example.model.AppUpdateConfig
+import com.example.network.VercelUpdateManager
 import com.example.ui.components.AdBannerPlaceholder
 import com.example.ui.components.GlassmorphicBottomBar
 import com.example.ui.components.TechnicianDrawerSheet
@@ -65,6 +69,7 @@ data class MaintenancePost(
 @Composable
 fun HomeScreen(
     config: AppUpdateConfig,
+    updateManager: VercelUpdateManager,
     onNavigateToCategory: (String) -> Unit,
     onNavigateToSettings: () -> Unit,
     onOpenUrlInApp: (url: String, title: String) -> Unit,
@@ -177,6 +182,14 @@ fun HomeScreen(
                 icon = Icons.Default.Save,
                 cardColor = ColorCategoryDumps,
                 onClick = { onNavigateToCategory("dump_collection") }
+            ),
+            HomeCategoryItem(
+                id = "flash",
+                title = "قسم فلاش YAZ",
+                subtitle = "تفليش الأجهزة ووضع Odin لأجهزة سامسونج",
+                icon = Icons.Default.Bolt,
+                cardColor = ColorCategoryFlash,
+                onClick = { onNavigateToCategory("flash") }
             )
         )
     }
@@ -232,6 +245,16 @@ fun HomeScreen(
         else categories.filter {
             it.title.contains(searchQuery, ignoreCase = true) ||
             it.subtitle.contains(searchQuery, ignoreCase = true)
+        }
+    }
+
+    // إعلان بين كل قسمين — ترتيب ثابت يعمل تلقائياً لأي أقسام تُضاف مستقبلاً
+    val gridEntries = remember(filteredCategories) {
+        buildList<Any> {
+            filteredCategories.forEachIndexed { index, cat ->
+                add(cat)
+                if ((index + 1) % 2 == 0) add("AD_AFTER_$index")
+            }
         }
     }
 
@@ -344,11 +367,19 @@ fun HomeScreen(
                 )
             }
         ) { innerPadding ->
-            Column(
+            val isRefreshing by updateManager.isChecking.collectAsState()
+            // السحب من فوق للأسفل لتحديث البيانات من السيرفر
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = { updateManager.checkForUpdates(scope) },
+                state = rememberPullToRefreshState(),
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
                     .background(BackgroundLight)
+            ) {
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
                 // Top Tab Selector: "قسم الخدمات" و "قسم المنشورات"
                 Surface(
@@ -415,7 +446,7 @@ fun HomeScreen(
                     if (page == 0) {
                     // TAB 0: قسم الخدمات (12 Grid Squares)
                     LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
+                        columns = GridCells.Adaptive(160.dp),
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp),
@@ -424,7 +455,7 @@ fun HomeScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         // Hero Banner
-                        item(span = { GridItemSpan(2) }) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
                             Card(
                                 shape = RoundedCornerShape(16.dp),
                                 colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -481,7 +512,7 @@ fun HomeScreen(
 
                         // Broadcast Announcement Banner if active
                         if (config.isBroadcastActive && config.broadcastTitle.isNotBlank()) {
-                            item(span = { GridItemSpan(2) }) {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
                                 Card(
                                     shape = RoundedCornerShape(12.dp),
                                     colors = CardDefaults.cardColors(containerColor = Color(0xFFEFF6FF)),
@@ -522,7 +553,7 @@ fun HomeScreen(
                                             Icon(
                                                 imageVector = Icons.Default.Close,
                                                 contentDescription = "إغلاق",
-                                                tint = Color(0xFF64748B),
+                                                tint = Color.Black,
                                                 modifier = Modifier.size(18.dp)
                                             )
                                         }
@@ -532,14 +563,14 @@ fun HomeScreen(
                         }
 
                         // Search Bar
-                        item(span = { GridItemSpan(2) }) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
                             OutlinedTextField(
                                 value = searchQuery,
                                 onValueChange = { searchQuery = it },
                                 placeholder = {
                                     Text(
                                         text = "ابحث في الأقسام والخدمات...",
-                                        style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFF94A3B8))
+                                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.Black)
                                     )
                                 },
                                 leadingIcon = {
@@ -555,7 +586,7 @@ fun HomeScreen(
                                             Icon(
                                                 imageVector = Icons.Default.Clear,
                                                 contentDescription = "مسح",
-                                                tint = Color(0xFF64748B)
+                                                tint = Color.Black
                                             )
                                         }
                                     }
@@ -573,7 +604,7 @@ fun HomeScreen(
                         }
 
                         // Header for Categories
-                        item(span = { GridItemSpan(2) }) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -589,14 +620,27 @@ fun HomeScreen(
                                 Text(
                                     text = "12 قسماً شاملاً لصيانة المحمول",
                                     style = MaterialTheme.typography.labelSmall.copy(
-                                        color = Color(0xFF64748B)
+                                        color = Color.Black
                                     )
                                 )
                             }
                         }
 
-                        // 12 Main Grid Squares with Custom Distinct Colors
-                        items(filteredCategories, key = { it.id }) { cat ->
+                        // Inline Ad Placement (AdSense) - أعلى الشبكة
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            AdBannerPlaceholder(adSlotName = "إعلان - الصفحة الرئيسية")
+                        }
+
+                        // إعلان بين كل قسمين — قائمة مدمجة بترتيب ثابت لأي أقسام مستقبلية
+                        items(
+                            gridEntries,
+                            key = { entry -> if (entry is HomeCategoryItem) entry.id else entry.toString() },
+                            span = { entry -> if (entry is HomeCategoryItem) GridItemSpan(1) else GridItemSpan(maxLineSpan) }
+                        ) { entry ->
+                            if (entry is String) {
+                                AdBannerPlaceholder(adSlotName = "إعلان - بين أقسام الخدمات")
+                            } else {
+                                val cat = entry as HomeCategoryItem
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -664,7 +708,7 @@ fun HomeScreen(
                                         Text(
                                             text = cat.subtitle,
                                             style = MaterialTheme.typography.bodySmall.copy(
-                                                color = Color(0xFF64748B),
+                                                color = Color.Black,
                                                 fontSize = 11.sp,
                                                 lineHeight = 15.sp
                                             ),
@@ -675,9 +719,10 @@ fun HomeScreen(
                                 }
                             }
                         }
+                        }
 
                         // In-Screen Ad Banner
-                        item(span = { GridItemSpan(2) }) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
                             AdBannerPlaceholder(adSlotName = "إعلان - قسم الخدمات الرئيسي")
                         }
                     }
@@ -741,7 +786,7 @@ fun HomeScreen(
                                     Text(
                                         text = "تابع أحدث المقالات والحلول الحصرية لأعطال الهاردوير والسوفت وير وتحديثات البوكسات والأدوات.",
                                         style = MaterialTheme.typography.bodySmall.copy(
-                                            color = Color(0xFF475569),
+                                            color = Color.Black,
                                             lineHeight = 20.sp
                                         )
                                     )
@@ -798,6 +843,9 @@ fun HomeScreen(
                                     }
                             ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
+                                    // إعلان أول المنشور
+                                    AdBannerPlaceholder(adSlotName = "إعلان - أول المنشور")
+                                    Spacer(modifier = Modifier.height(8.dp))
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -818,7 +866,7 @@ fun HomeScreen(
                                         }
                                         Text(
                                             text = post.date,
-                                            style = MaterialTheme.typography.labelSmall.copy(color = Color(0xFF94A3B8))
+                                            style = MaterialTheme.typography.labelSmall.copy(color = Color.Black)
                                         )
                                     }
 
@@ -834,14 +882,22 @@ fun HomeScreen(
 
                                     Spacer(modifier = Modifier.height(4.dp))
 
+                                    // إعلان وسط المنشور
+                                    AdBannerPlaceholder(adSlotName = "إعلان - وسط المنشور")
+                                    Spacer(modifier = Modifier.height(4.dp))
+
                                     Text(
                                         text = post.excerpt,
                                         style = MaterialTheme.typography.bodySmall.copy(
-                                            color = Color(0xFF64748B),
+                                            color = Color.Black,
                                             lineHeight = 18.sp
                                         )
                                     )
 
+                                    Spacer(modifier = Modifier.height(10.dp))
+
+                                    // إعلان آخر المنشور
+                                    AdBannerPlaceholder(adSlotName = "إعلان - آخر المنشور")
                                     Spacer(modifier = Modifier.height(10.dp))
 
                                     Row(
@@ -876,6 +932,7 @@ fun HomeScreen(
                 }
                 }
             }
+            }
 
             // Post Details Modal Dialog
             selectedPostForDialog?.let { post ->
@@ -889,15 +946,31 @@ fun HomeScreen(
                     },
                     text = {
                         Column {
+                            // إعلان أول المقال
+                            AdBannerPlaceholder(adSlotName = "إعلان - أول المقال")
+                            Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "التصنيف: ${post.category} • التاريخ: ${post.date}",
                                 style = MaterialTheme.typography.labelSmall.copy(color = PrimaryBlue, fontWeight = FontWeight.Bold)
                             )
                             Spacer(modifier = Modifier.height(10.dp))
+                            val words = remember(post.id) { post.fullContent.split(" ") }
+                            val mid = (words.size + 1) / 2
                             Text(
-                                text = post.fullContent,
+                                text = words.take(mid).joinToString(" "),
                                 style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp, color = Color(0xFF1E293B))
                             )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            // إعلان وسط المقال
+                            AdBannerPlaceholder(adSlotName = "إعلان - وسط المقال")
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = words.drop(mid).joinToString(" "),
+                                style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp, color = Color(0xFF1E293B))
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            // إعلان آخر المقال
+                            AdBannerPlaceholder(adSlotName = "إعلان - آخر المقال")
                         }
                     },
                     confirmButton = {

@@ -139,7 +139,18 @@ fun TechnicianDrawerSheet(
             )
 
             NavigationDrawerItem(
-                icon = { Icon(Icons.Default.Settings, contentDescription = null, tint = Color(0xFF64748B)) },
+                icon = { Icon(Icons.Default.Bolt, contentDescription = null, tint = Color(0xFFDC2626)) },
+                label = { Text("قسم فلاش YAZ (تفليش الأجهزة)", fontWeight = FontWeight.Bold) },
+                selected = false,
+                onClick = {
+                    onCloseDrawer()
+                    onNavigate("flash")
+                },
+                modifier = Modifier.padding(horizontal = 12.dp)
+            )
+
+            NavigationDrawerItem(
+                icon = { Icon(Icons.Default.Settings, contentDescription = null, tint = Color.Black) },
                 label = { Text("الإعدادات وعن التطبيق", fontWeight = FontWeight.Bold) },
                 selected = false,
                 onClick = {
@@ -170,11 +181,11 @@ fun TechnicianDrawerSheet(
                     )
                     Text(
                         text = "Publisher: pub-4752417544013096",
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp, color = Color(0xFF475569))
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp, color = Color.Black)
                     )
                     Text(
                         text = "Customer ID: 9947688120",
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp, color = Color(0xFF475569))
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp, color = Color.Black)
                     )
                 }
             }

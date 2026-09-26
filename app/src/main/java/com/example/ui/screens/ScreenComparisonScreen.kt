@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.TechnicianDataProvider
 import com.example.model.ScreenTechSpec
 import com.example.ui.components.AdBannerPlaceholder
+import com.example.ui.components.SectionFilterStrip
 import com.example.ui.theme.ColorCategoryScreens
 import com.example.ui.theme.PrimaryBlue
 
@@ -36,21 +37,28 @@ fun ScreenComparisonScreen(
     BackHandler { onBack() }
 
     val allSpecs = TechnicianDataProvider.screenTechSpecs
-    var selectedTab by remember { mutableStateOf("all") }
+    var selectedTab by remember { mutableStateOf("oled") }
     var expandedItemIds by remember { mutableStateOf(setOf<String>()) }
+    var searchQuery by remember { mutableStateOf("") }
 
     // Compare mode
     var isCompareMode by remember { mutableStateOf(false) }
     var compareSpec1 by remember { mutableStateOf<ScreenTechSpec?>(allSpecs.getOrNull(0)) }
     var compareSpec2 by remember { mutableStateOf<ScreenTechSpec?>(allSpecs.getOrNull(2)) }
 
-    val filteredSpecs = remember(selectedTab) {
-        when (selectedTab) {
+    val filteredSpecs = remember(selectedTab, searchQuery) {
+        val byTab = when (selectedTab) {
             "oled" -> allSpecs.filter { it.id == "scr_oled" || it.id == "scr_amoled" }
             "ips" -> allSpecs.filter { it.id == "scr_ips" }
             "incell" -> allSpecs.filter { it.id == "scr_incell" }
             "copy" -> allSpecs.filter { it.id == "scr_copy_grades" }
             else -> allSpecs
+        }
+        if (searchQuery.isBlank()) byTab
+        else byTab.filter {
+            it.title.contains(searchQuery, ignoreCase = true) ||
+            it.technology.contains(searchQuery, ignoreCase = true) ||
+            it.technicianRecommendation.contains(searchQuery, ignoreCase = true)
         }
     }
 
@@ -128,7 +136,7 @@ fun ScreenComparisonScreen(
                             )
                             Text(
                                 text = "الفروقات الجوهرية، مشاكل الـ Touch IC، والتروتون ودرجات الكوبي",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                             )
                         }
                     }
@@ -237,6 +245,23 @@ fun ScreenComparisonScreen(
                 }
             }
 
+            // Search Bar
+            item {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { Text("ابحث في الشاشات (OLED، تروتون، آيسي)...") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = ColorCategoryScreens) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
             // Filter Chips
             item {
                 LazyRow(
@@ -244,7 +269,6 @@ fun ScreenComparisonScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     val tabs = listOf(
-                        "all" to "جميع الأنواع",
                         "oled" to "OLED و AMOLED",
                         "ips" to "IPS LCD",
                         "incell" to "Incell البديلة",
@@ -265,6 +289,11 @@ fun ScreenComparisonScreen(
             }
 
             // Specs Cards List
+            // Inline Ad Placement (AdSense)
+            item {
+                AdBannerPlaceholder(adSlotName = "إعلان - مقارنة الشاشات")
+            }
+
             items(filteredSpecs, key = { it.id }) { spec ->
                 val isExpanded = expandedItemIds.contains(spec.id)
 
@@ -296,7 +325,7 @@ fun ScreenComparisonScreen(
                                 Text(
                                     text = spec.structure,
                                     style = MaterialTheme.typography.bodySmall.copy(
-                                        color = Color(0xFF475569),
+                                        color = Color.Black,
                                         lineHeight = 18.sp
                                     )
                                 )
@@ -356,7 +385,7 @@ fun ScreenComparisonScreen(
                                 Text(
                                     text = spec.originalVsCopyDetails,
                                     style = MaterialTheme.typography.bodySmall.copy(
-                                        color = Color(0xFF334155),
+                                        color = Color.Black,
                                         lineHeight = 20.sp
                                     )
                                 )
@@ -373,7 +402,7 @@ fun ScreenComparisonScreen(
                                 Text(
                                     text = spec.icSwapDetails + " " + spec.trueToneDetails,
                                     style = MaterialTheme.typography.bodySmall.copy(
-                                        color = Color(0xFF334155),
+                                        color = Color.Black,
                                         lineHeight = 20.sp
                                     )
                                 )
@@ -390,7 +419,7 @@ fun ScreenComparisonScreen(
                                 spec.commonRepairFaults.forEach { fault ->
                                     Row(modifier = Modifier.padding(vertical = 2.dp)) {
                                         Text("• ", color = Color(0xFFDC2626), fontWeight = FontWeight.Bold)
-                                        Text(fault, style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569)))
+                                        Text(fault, style = MaterialTheme.typography.bodySmall.copy(color = Color.Black))
                                     }
                                 }
 
@@ -467,7 +496,7 @@ private fun CompareRowTable(label: String, val1: String, val2: String) {
             text = label,
             style = MaterialTheme.typography.labelSmall.copy(
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF64748B)
+                color = Color.Black
             )
         )
         Row(

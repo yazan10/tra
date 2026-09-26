@@ -10,7 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.TechnicianDataProvider
 import com.example.ui.components.AdBannerPlaceholder
+import com.example.ui.components.SectionFilterStrip
 import com.example.ui.theme.ColorCategoryRoms
 import com.example.ui.theme.PrimaryBlue
 
@@ -31,6 +32,18 @@ fun RomDownloadScreen(
     BackHandler { onBack() }
 
     val sites = TechnicianDataProvider.romDownloadSites
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedSection by remember { mutableStateOf(sites.firstOrNull()?.brandTarget ?: "") }
+
+    val filteredSites = remember(searchQuery, selectedSection) {
+        sites.filter { site ->
+            val matchSection = site.brandTarget == selectedSection
+            val matchQuery = searchQuery.isBlank() ||
+                site.title.contains(searchQuery, ignoreCase = true) ||
+                site.description.contains(searchQuery, ignoreCase = true)
+            matchSection && matchQuery
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -97,7 +110,7 @@ fun RomDownloadScreen(
                             )
                             Text(
                                 text = "أفضل المواقع المعتمدة لتحميل فلاشات شاومي، سامسونج، أوبو، تكنو، والأجهزة الصينية",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                             )
                         }
                     }
@@ -105,7 +118,39 @@ fun RomDownloadScreen(
             }
 
             // Sites list
-            items(sites, key = { it.id }) { site ->
+            // Search Bar
+            item {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { Text("ابحث في الرومات (شاومي، سامسونج، أوبو)...") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = ColorCategoryRoms) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            // Sections Strip
+            item {
+                SectionFilterStrip(
+                    sections = sites.map { it.brandTarget }.distinct(),
+                    selected = selectedSection,
+                    onSelect = { selectedSection = it },
+                    accentColor = ColorCategoryRoms
+                )
+            }
+
+            // Inline Ad Placement (AdSense)
+            item {
+                AdBannerPlaceholder(adSlotName = "إعلان - مواقع تحميل الرومات")
+            }
+
+            items(filteredSites, key = { it.id }) { site ->
                 Card(
                     shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -158,7 +203,7 @@ fun RomDownloadScreen(
                         Text(
                             text = site.description,
                             style = MaterialTheme.typography.bodySmall.copy(
-                                color = Color(0xFF475569),
+                                color = Color.Black,
                                 lineHeight = 19.sp
                             )
                         )

@@ -104,7 +104,7 @@ fun MandatoryUpdateDialog(
                 Text(
                     text = config.updateMessage,
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        color = Color(0xFF475569),
+                        color = Color.Black,
                         lineHeight = 22.sp
                     ),
                     textAlign = TextAlign.Center
@@ -144,7 +144,7 @@ fun MandatoryUpdateDialog(
                     ) {
                         Text(
                             text = "تذكيري لاحقاً",
-                            style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFF64748B))
+                            style = MaterialTheme.typography.bodyMedium.copy(color = Color.Black)
                         )
                     }
                 }

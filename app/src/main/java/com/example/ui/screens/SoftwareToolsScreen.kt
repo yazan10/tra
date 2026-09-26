@@ -12,7 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.TechnicianDataProvider
 import com.example.ui.components.AdBannerPlaceholder
+import com.example.ui.components.SectionFilterStrip
 import com.example.ui.theme.ColorCategoryTools
 import com.example.ui.theme.PrimaryBlue
 
@@ -34,6 +35,19 @@ fun SoftwareToolsScreen(
     BackHandler { onBack() }
     val context = LocalContext.current
     val tools = TechnicianDataProvider.softwareTools
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedSection by remember { mutableStateOf("احترافية") }
+
+    val filteredTools = remember(searchQuery, selectedSection) {
+        tools.filter { tool ->
+            val matchSection = tool.toolType.contains(selectedSection)
+            val matchQuery = searchQuery.isBlank() ||
+                tool.name.contains(searchQuery, ignoreCase = true) ||
+                tool.description.contains(searchQuery, ignoreCase = true) ||
+                tool.supportedCPUs.contains(searchQuery, ignoreCase = true)
+            matchSection && matchQuery
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -100,14 +114,46 @@ fun SoftwareToolsScreen(
                             )
                             Text(
                                 text = "أهم برامج التفليش، فك البوت لودر، تخطي FRP، وإصلاح السيريال والشبكة",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                             )
                         }
                     }
                 }
             }
 
-            items(tools, key = { it.id }) { tool ->
+            // Search Bar
+            item {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { Text("ابحث في الأدوات (Chimera، UFI، MRT)...") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = ColorCategoryTools) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            // Sections Strip
+            item {
+                SectionFilterStrip(
+                    sections = listOf("احترافية", "مجانية", "رسمية"),
+                    selected = selectedSection,
+                    onSelect = { selectedSection = it },
+                    accentColor = ColorCategoryTools
+                )
+            }
+
+            // Inline Ad Placement (AdSense)
+            item {
+                AdBannerPlaceholder(adSlotName = "إعلان - أدوات السوفت وير")
+            }
+
+            items(filteredTools, key = { it.id }) { tool ->
                 Card(
                     shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -150,7 +196,7 @@ fun SoftwareToolsScreen(
                         Text(
                             text = tool.description,
                             style = MaterialTheme.typography.bodySmall.copy(
-                                color = Color(0xFF475569),
+                                color = Color.Black,
                                 lineHeight = 19.sp
                             )
                         )
@@ -179,7 +225,7 @@ fun SoftwareToolsScreen(
                                 Text("✓ ", color = ColorCategoryTools, fontWeight = FontWeight.Bold)
                                 Text(
                                     text = cap,
-                                    style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF334155))
+                                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                                 )
                             }
                         }

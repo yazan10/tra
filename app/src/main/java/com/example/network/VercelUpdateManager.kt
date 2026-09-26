@@ -17,6 +17,16 @@ class VercelUpdateManager(private val context: Context) {
 
     private val prefs = context.getSharedPreferences("phone_traffic_prefs", Context.MODE_PRIVATE)
 
+    // رقم إصدار التطبيق الحقيقي المثبت على الجهاز (من PackageManager)
+    val installedVersionCode: Int = try {
+        val p = context.packageManager.getPackageInfo(context.packageName, 0)
+        if (android.os.Build.VERSION.SDK_INT >= 28) p.longVersionCode.toInt() else @Suppress("DEPRECATION") p.versionCode
+    } catch (_: Exception) { 1 }
+
+    val installedVersionName: String = try {
+        context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "1.0"
+    } catch (_: Exception) { "1.0" }
+
     private val client = OkHttpClient.Builder()
         .connectTimeout(6, TimeUnit.SECONDS)
         .readTimeout(6, TimeUnit.SECONDS)
@@ -29,8 +39,8 @@ class VercelUpdateManager(private val context: Context) {
 
     private val _configState = MutableStateFlow(
         AppUpdateConfig(
-            currentVersionCode = 1,
-            latestVersionCode = 1,
+            currentVersionCode = installedVersionCode,
+            latestVersionCode = installedVersionCode,
             latestVersionName = "1.0.0",
             isMandatory = false,
             updateTitle = "تحديث جديد لتطبيق فون ترافيك",
@@ -73,8 +83,14 @@ class VercelUpdateManager(private val context: Context) {
                         val bTitle = json.optString("broadcastTitle", "إشعار من الإدارة")
                         val bMsg = json.optString("broadcastMessage", "")
                         val bActive = json.optBoolean("isBroadcastActive", true)
+                        val blogUrl = json.optString("blogUrl", AppAds.BLOG_URL)
+                        // إعدادات AdSense من السيرفر (تتحكم بها لوحة الأدمن)
+                        val adsObj = json.optJSONObject("adsense")
+                        val adsEnabled = adsObj?.optBoolean("adsEnabled", true) ?: true
+                        AppAds.updateFromServer(adsEnabled)
 
                         _configState.value = _configState.value.copy(
+                            currentVersionCode = installedVersionCode,
                             latestVersionCode = latestCode,
                             latestVersionName = latestName,
                             isMandatory = isMandatory,
@@ -83,7 +99,9 @@ class VercelUpdateManager(private val context: Context) {
                             downloadUrl = downloadUrl,
                             broadcastTitle = bTitle,
                             broadcastMessage = bMsg,
-                            isBroadcastActive = bActive
+                            isBroadcastActive = bActive,
+                            adsEnabled = adsEnabled,
+                            blogUrl = blogUrl
                         )
                         _lastCheckResult.value = "تمت المزامنة بنجاح مع استضافة Vercel"
                         onComplete?.invoke(true)

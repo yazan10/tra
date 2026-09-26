@@ -1,6 +1,5 @@
 package com.example.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -42,20 +41,20 @@ private val DarkColorScheme = darkColorScheme(
     onBackground = Color(0xFFF8FAFC),
     surface = Color(0xFF1E293B),
     onSurface = Color(0xFFF8FAFC),
-    surfaceVariant = Color(0xFF334155),
+    surfaceVariant = Color.Black,
     onSurfaceVariant = Color(0xFFCBD5E1),
-    outline = Color(0xFF475569),
+    outline = Color.Black,
     error = Color(0xFFEF4444),
     onError = PureWhite
 )
 
 @Composable
 fun PhoneTrafficTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    // User requested Blue, White, Black text style
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    // User requested Blue, White, Black text style — ثيم فاتح ثابت دائماً
+    val colorScheme = LightColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,

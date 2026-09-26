@@ -10,6 +10,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -17,20 +19,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.network.AppAds
 import com.example.ui.theme.PrimaryBlue
 
 /**
  * Standard AdSense / AdMob banner placeholder compliant with Google Play Ad Policies.
  * Clearly labeled and integrated into each section of the app.
+ * يظهر/يختفي لحظياً حسب إعدادات AdSense في لوحة الأدمن (pub-4752417544013096).
  */
 @Composable
 fun AdBannerPlaceholder(
     modifier: Modifier = Modifier,
     adSlotName: String = "مساحة إعلانية - AdSense / AdMob"
 ) {
+    val adsEnabled by AppAds.adsEnabled.collectAsState()
+    if (!adsEnabled) return
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .navigationBarsPadding()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .height(56.dp)
             .clip(RoundedCornerShape(8.dp))
@@ -62,14 +69,14 @@ fun AdBannerPlaceholder(
             Icon(
                 imageVector = Icons.Default.Info,
                 contentDescription = null,
-                tint = Color(0xFF64748B),
+                tint = Color.Black,
                 modifier = Modifier.size(16.dp)
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = adSlotName,
                 style = MaterialTheme.typography.bodySmall.copy(
-                    color = Color(0xFF475569),
+                    color = Color.Black,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium
                 )

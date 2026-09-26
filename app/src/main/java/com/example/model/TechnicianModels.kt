@@ -168,5 +168,7 @@ data class AppUpdateConfig(
     val downloadUrl: String = "https://phone-traffic.vercel.app/download",
     val broadcastTitle: String = "تنبيه فني هام 🔔",
     val broadcastMessage: String = "تم تحديث روابط فحص الآيكلاود وشاومي لتوفير أسرع استجابة للفحص بدون كابتشا.",
-    val isBroadcastActive: Boolean = true
+    val isBroadcastActive: Boolean = true,
+    val adsEnabled: Boolean = true,
+    val blogUrl: String = "https://yaz-blog.blogspot.com/"
 )

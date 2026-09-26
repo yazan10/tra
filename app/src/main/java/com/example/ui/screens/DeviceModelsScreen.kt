@@ -40,11 +40,11 @@ fun DeviceModelsScreen(
 
     val allCodes = TechnicianDataProvider.deviceCodes
     var searchQuery by remember { mutableStateOf("") }
-    var selectedBrand by remember { mutableStateOf(DeviceBrand.ALL) }
+    var selectedBrand by remember { mutableStateOf(DeviceBrand.SAMSUNG) }
 
     val filteredList = remember(searchQuery, selectedBrand) {
         allCodes.filter { item ->
-            val matchBrand = (selectedBrand == DeviceBrand.ALL) || (item.brand == selectedBrand)
+            val matchBrand = (item.brand == selectedBrand)
             val matchQuery = searchQuery.isBlank() ||
                 item.factoryCode.contains(searchQuery, ignoreCase = true) ||
                 item.commercialName.contains(searchQuery, ignoreCase = true) ||
@@ -119,7 +119,7 @@ fun DeviceModelsScreen(
                             )
                             Text(
                                 text = "اكتب كود الهاتف من الشاسيه أو وضع الداونلود لمعرفة اسمه ونوع المعالج",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                             )
                         }
                     }
@@ -150,7 +150,6 @@ fun DeviceModelsScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     val brands = listOf(
-                        DeviceBrand.ALL to "الكل",
                         DeviceBrand.SAMSUNG to "سامسونج",
                         DeviceBrand.XIAOMI to "شاومي",
                         DeviceBrand.OPPO to "أوبو",
@@ -173,6 +172,11 @@ fun DeviceModelsScreen(
             }
 
             // Code cards
+            // Inline Ad Placement (AdSense)
+            item {
+                AdBannerPlaceholder(adSlotName = "إعلان - موديلات الأجهزة")
+            }
+
             items(filteredList, key = { it.id }) { item ->
                 Card(
                     shape = RoundedCornerShape(12.dp),
@@ -205,7 +209,7 @@ fun DeviceModelsScreen(
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = item.releaseYear,
-                                    style = MaterialTheme.typography.labelSmall.copy(color = Color(0xFF94A3B8))
+                                    style = MaterialTheme.typography.labelSmall.copy(color = Color.Black)
                                 )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
@@ -220,7 +224,7 @@ fun DeviceModelsScreen(
                             Text(
                                 text = "المعالج: ${item.processor} • ${item.notes}",
                                 style = MaterialTheme.typography.bodySmall.copy(
-                                    color = Color(0xFF64748B),
+                                    color = Color.Black,
                                     fontSize = 11.sp
                                 )
                             )

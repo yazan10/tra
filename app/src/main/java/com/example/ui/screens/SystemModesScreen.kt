@@ -10,7 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.TechnicianDataProvider
 import com.example.ui.components.AdBannerPlaceholder
+import com.example.ui.components.SectionFilterStrip
 import com.example.ui.theme.ColorCategorySystems
 import com.example.ui.theme.PrimaryBlue
 
@@ -30,6 +31,32 @@ fun SystemModesScreen(
     BackHandler { onBack() }
 
     val modes = TechnicianDataProvider.systemModes
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedSection by remember { mutableStateOf("آيفون iOS") }
+
+    val modeKeywords = mapOf(
+        "آيفون iOS" to "Apple",
+        "أندرويد" to "أندرويد",
+        "كوالكوم" to "كوالكوم",
+        "ميدياتك" to "MediaTek",
+        "سامسونج" to "سامسونج",
+        "شاومي" to "شاومي"
+    )
+
+    val filteredModes = remember(searchQuery, selectedSection) {
+        val keyword = modeKeywords[selectedSection] ?: "Apple"
+        modes.filter { mode ->
+            val matchSection =
+                mode.supportedPlatforms.contains(keyword) ||
+                mode.nameAr.contains(keyword) ||
+                mode.nameEn.contains(keyword, ignoreCase = true)
+            val matchQuery = searchQuery.isBlank() ||
+                mode.nameAr.contains(searchQuery, ignoreCase = true) ||
+                mode.nameEn.contains(searchQuery, ignoreCase = true) ||
+                mode.purpose.contains(searchQuery, ignoreCase = true)
+            matchSection && matchQuery
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -96,14 +123,46 @@ fun SystemModesScreen(
                             )
                             Text(
                                 text = "أزرار الدخول والخروج، أوامر الـ CMD، وتخطي الأخطاء",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                             )
                         }
                     }
                 }
             }
 
-            items(modes, key = { it.id }) { mode ->
+            // Search Bar
+            item {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { Text("ابحث في الأوضاع (EDL، فاست بوت، ريكفري)...") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = ColorCategorySystems) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            // Sections Strip
+            item {
+                SectionFilterStrip(
+                    sections = listOf("آيفون iOS", "أندرويد", "كوالكوم", "ميدياتك", "سامسونج", "شاومي"),
+                    selected = selectedSection,
+                    onSelect = { selectedSection = it },
+                    accentColor = ColorCategorySystems
+                )
+            }
+
+            // Inline Ad Placement (AdSense)
+            item {
+                AdBannerPlaceholder(adSlotName = "إعلان - شرح الأنظمة")
+            }
+
+            items(filteredModes, key = { it.id }) { mode ->
                 Card(
                     shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -153,7 +212,7 @@ fun SystemModesScreen(
                         Text(
                             text = mode.purpose,
                             style = MaterialTheme.typography.bodySmall.copy(
-                                color = Color(0xFF334155),
+                                color = Color.Black,
                                 lineHeight = 19.sp
                             )
                         )
@@ -176,7 +235,7 @@ fun SystemModesScreen(
                                 )
                                 Text(
                                     text = mode.enterKeyCombination,
-                                    style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                                 )
 
                                 Spacer(modifier = Modifier.height(6.dp))
@@ -207,7 +266,7 @@ fun SystemModesScreen(
                                 )
                                 Text(
                                     text = mode.howToExit,
-                                    style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                                 )
                             }
                         }

@@ -20,8 +20,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.TechnicianDataProvider
+import com.example.model.DeviceBrand
 import com.example.model.DeviceSpecItem
 import com.example.ui.components.AdBannerPlaceholder
+import com.example.ui.components.SectionFilterStrip
 import com.example.ui.theme.ColorCategoryDevices
 import com.example.ui.theme.PrimaryBlue
 
@@ -35,13 +37,27 @@ fun DeviceComparisonScreen(
     val devices = TechnicianDataProvider.deviceSpecs
     var searchQuery by remember { mutableStateOf("") }
     var expandedId by remember { mutableStateOf<String?>(devices.firstOrNull()?.id) }
+    var selectedBrand by remember { mutableStateOf(DeviceBrand.APPLE) }
 
-    val filteredDevices = remember(searchQuery) {
-        if (searchQuery.isBlank()) devices
-        else devices.filter {
-            it.modelName.contains(searchQuery, ignoreCase = true) ||
-            it.modelCode.contains(searchQuery, ignoreCase = true) ||
-            it.cpuChipset.contains(searchQuery, ignoreCase = true)
+    val brandLabels = mapOf(
+        DeviceBrand.APPLE to "آيفون",
+        DeviceBrand.SAMSUNG to "سامسونج",
+        DeviceBrand.XIAOMI to "شاومي",
+        DeviceBrand.HUAWEI to "هواوي",
+        DeviceBrand.OPPO to "أوبو",
+        DeviceBrand.REALME to "ريلمي",
+        DeviceBrand.INFINIX_TECNO to "إنفينكس وتكنو",
+        DeviceBrand.VIVO to "فيفو"
+    )
+
+    val filteredDevices = remember(searchQuery, selectedBrand) {
+        devices.filter {
+            val matchBrand = it.brand == selectedBrand
+            val matchQuery = searchQuery.isBlank() ||
+                it.modelName.contains(searchQuery, ignoreCase = true) ||
+                it.modelCode.contains(searchQuery, ignoreCase = true) ||
+                it.cpuChipset.contains(searchQuery, ignoreCase = true)
+            matchBrand && matchQuery
         }
     }
 
@@ -110,7 +126,7 @@ fun DeviceComparisonScreen(
                             )
                             Text(
                                 text = "آيسيهات الباور والشحن، حلول الشبلنة، ومشاكل الإقلاع",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                             )
                         }
                     }
@@ -132,6 +148,23 @@ fun DeviceComparisonScreen(
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
+            }
+
+            // Sections Strip
+            item {
+                SectionFilterStrip(
+                    sections = brandLabels.values.toList(),
+                    selected = brandLabels[selectedBrand] ?: "آيفون",
+                    onSelect = { label ->
+                        selectedBrand = brandLabels.entries.first { it.value == label }.key
+                    },
+                    accentColor = ColorCategoryDevices
+                )
+            }
+
+            // Inline Ad Placement (AdSense)
+            item {
+                AdBannerPlaceholder(adSlotName = "إعلان - مقارنة الأجهزة")
             }
 
             items(filteredDevices, key = { it.id }) { dev ->
@@ -194,7 +227,7 @@ fun DeviceComparisonScreen(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Column(modifier = Modifier.padding(8.dp)) {
-                                    Text("المعالج CPU", style = MaterialTheme.typography.labelSmall.copy(color = Color(0xFF64748B)))
+                                    Text("المعالج CPU", style = MaterialTheme.typography.labelSmall.copy(color = Color.Black))
                                     Text(dev.cpuChipset, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold))
                                 }
                             }
@@ -204,7 +237,7 @@ fun DeviceComparisonScreen(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Column(modifier = Modifier.padding(8.dp)) {
-                                    Text("آيسي الباور PMIC", style = MaterialTheme.typography.labelSmall.copy(color = Color(0xFF64748B)))
+                                    Text("آيسي الباور PMIC", style = MaterialTheme.typography.labelSmall.copy(color = Color.Black))
                                     Text(dev.pmicChip, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold))
                                 }
                             }
@@ -222,7 +255,7 @@ fun DeviceComparisonScreen(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Column(modifier = Modifier.padding(8.dp)) {
-                                    Text("سرعة الشحن والبطارية", style = MaterialTheme.typography.labelSmall.copy(color = Color(0xFF64748B)))
+                                    Text("سرعة الشحن والبطارية", style = MaterialTheme.typography.labelSmall.copy(color = Color.Black))
                                     Text("${dev.chargingSpeed} | ${dev.batteryCapacity}", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold))
                                 }
                             }
@@ -232,7 +265,7 @@ fun DeviceComparisonScreen(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Column(modifier = Modifier.padding(8.dp)) {
-                                    Text("نوع الشاشة", style = MaterialTheme.typography.labelSmall.copy(color = Color(0xFF64748B)))
+                                    Text("نوع الشاشة", style = MaterialTheme.typography.labelSmall.copy(color = Color.Black))
                                     Text(dev.screenType, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold))
                                 }
                             }
@@ -279,7 +312,7 @@ fun DeviceComparisonScreen(
                                             Text(
                                                 text = "طريقة الإصلاح: ${fault.solutionGuide}",
                                                 style = MaterialTheme.typography.bodySmall.copy(
-                                                    color = Color(0xFF334155),
+                                                    color = Color.Black,
                                                     lineHeight = 18.sp
                                                 )
                                             )

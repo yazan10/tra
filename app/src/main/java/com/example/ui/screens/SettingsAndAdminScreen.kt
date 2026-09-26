@@ -109,7 +109,7 @@ fun SettingsAndAdminScreen(
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             text = "تحقق من توفر أحدث إصدار لتحديث توافقات الشاشات، نقاط التيست بوينت وروابط الفحص السريع.",
-                            style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                            style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                         )
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -233,7 +233,7 @@ fun SettingsAndAdminScreen(
                         Text(
                             text = "• التطبيق: Phone Traffic (فون ترافيك)\n• الحزمة: yaz.phone\n• متوافق من أندرويد 6.0 فصاعداً\n• لا يطلب أي صلاحيات خطيرة أو وصول لملفات المستخدم\n• خط المنصة: IBM Plex Sans Arabic Bold\n• الإصدار: v1.0.0",
                             style = MaterialTheme.typography.bodySmall.copy(
-                                color = Color(0xFF475569),
+                                color = Color.Black,
                                 lineHeight = 20.sp
                             )
                         )

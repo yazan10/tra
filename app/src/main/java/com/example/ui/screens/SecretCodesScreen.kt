@@ -14,7 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.TechnicianDataProvider
 import com.example.ui.components.AdBannerPlaceholder
+import com.example.ui.components.SectionFilterStrip
 import com.example.ui.theme.ColorCategoryCodes
 import com.example.ui.theme.PrimaryBlue
 
@@ -36,6 +37,19 @@ fun SecretCodesScreen(
     BackHandler { onBack() }
     val context = LocalContext.current
     val codes = TechnicianDataProvider.secretCodes
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedSection by remember { mutableStateOf(codes.firstOrNull()?.brandName ?: "") }
+
+    val filteredCodes = remember(searchQuery, selectedSection) {
+        codes.filter { item ->
+            val matchSection = item.brandName == selectedSection
+            val matchQuery = searchQuery.isBlank() ||
+                item.brandName.contains(searchQuery, ignoreCase = true) ||
+                item.primaryCode.contains(searchQuery, ignoreCase = true) ||
+                item.description.contains(searchQuery, ignoreCase = true)
+            matchSection && matchQuery
+        }
+    }
 
     fun copyCode(code: String, brand: String) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -109,14 +123,46 @@ fun SecretCodesScreen(
                             )
                             Text(
                                 text = "استخدم الرموز السرية من لوحة مكالمات الطوارئ أو شاشة الاتصال لفتح قوائم التشخيص وتصحيح USB",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                             )
                         }
                     }
                 }
             }
 
-            items(codes, key = { it.id }) { item ->
+            // Search Bar
+            item {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { Text("ابحث بكود أو ماركة (مثلاً *#06# أو سامسونج)...") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = ColorCategoryCodes) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            // Sections Strip
+            item {
+                SectionFilterStrip(
+                    sections = codes.map { it.brandName }.distinct(),
+                    selected = selectedSection,
+                    onSelect = { selectedSection = it },
+                    accentColor = ColorCategoryCodes
+                )
+            }
+
+            // Inline Ad Placement (AdSense)
+            item {
+                AdBannerPlaceholder(adSlotName = "إعلان - أكواد الهواتف السرية")
+            }
+
+            items(filteredCodes, key = { it.id }) { item ->
                 Card(
                     shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -158,7 +204,7 @@ fun SecretCodesScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = item.description,
-                            style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF64748B))
+                            style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -221,7 +267,7 @@ fun SecretCodesScreen(
                                     Column {
                                         Text(
                                             text = "الكود البديل:",
-                                            style = MaterialTheme.typography.labelSmall.copy(color = Color(0xFF94A3B8), fontSize = 10.sp)
+                                            style = MaterialTheme.typography.labelSmall.copy(color = Color.Black, fontSize = 10.sp)
                                         )
                                         Text(
                                             text = item.alternativeCode,

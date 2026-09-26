@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,6 +29,10 @@ data class GlassNavItem(
     val icon: ImageVector
 )
 
+/**
+ * شريط سفلي زجاجي عائم بأسلوب iOS 26 (Liquid Glass):
+ * بدون أي خلفية وراءه، يطفو فوق المحتوى وفوق أزرار التنقل بحواف منحنية.
+ */
 @Composable
 fun GlassmorphicBottomBar(
     currentScreen: String,
@@ -44,33 +47,50 @@ fun GlassmorphicBottomBar(
         GlassNavItem("settings", "الإعدادات", Icons.Default.Settings)
     )
 
+    // حاوية شفافة تماماً + إزاحة فوق أزرار النظام (أسهم التنقل)
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 12.dp),
+            .navigationBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 10.dp),
         contentAlignment = Alignment.Center
     ) {
-        Surface(
-            shape = RoundedCornerShape(32.dp),
-            color = Color.White.copy(alpha = 0.90f),
-            shadowElevation = 10.dp,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .shadow(
+                    elevation = 16.dp,
+                    shape = RoundedCornerShape(28.dp),
+                    ambientColor = PrimaryBlue.copy(alpha = 0.25f),
+                    spotColor = PrimaryBlue.copy(alpha = 0.25f)
+                )
+                .clip(RoundedCornerShape(28.dp))
+                // زجاج شفاف: أبيض بشفافية عالية + لمعة علوية
+                .background(Color.White.copy(alpha = 0.62f))
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.35f),
+                            Color.White.copy(alpha = 0.05f)
+                        )
+                    )
+                )
                 .border(
-                    width = 1.5.dp,
+                    width = 1.dp,
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            Color.White.copy(alpha = 0.95f),
-                            Color(0xFFE2E8F0).copy(alpha = 0.6f)
+                            Color.White.copy(alpha = 0.9f),
+                            Color(0xFFCBD5E1).copy(alpha = 0.45f),
+                            Color.White.copy(alpha = 0.7f)
                         )
                     ),
-                    shape = RoundedCornerShape(32.dp)
+                    shape = RoundedCornerShape(28.dp)
                 )
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                    .padding(horizontal = 6.dp, vertical = 5.dp),
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -82,19 +102,22 @@ fun GlassmorphicBottomBar(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
                             .clickable { onNavigate(item.id) }
-                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                            .padding(horizontal = 9.dp, vertical = 5.dp)
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(34.dp)
                                 .clip(RoundedCornerShape(17.dp))
-                                .background(if (isSelected) PrimaryBlue else Color.Transparent),
+                                .background(
+                                    if (isSelected) PrimaryBlue
+                                    else Color.White.copy(alpha = 0.5f)
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = item.icon,
                                 contentDescription = item.title,
-                                tint = if (isSelected) Color.White else Color(0xFF64748B),
+                                tint = if (isSelected) Color.White else Color.Black,
                                 modifier = Modifier.size(19.dp)
                             )
                         }
@@ -103,7 +126,7 @@ fun GlassmorphicBottomBar(
                             text = item.title,
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) PrimaryBlue else Color(0xFF64748B),
+                                color = if (isSelected) PrimaryBlue else Color.Black,
                                 fontSize = 10.sp
                             )
                         )

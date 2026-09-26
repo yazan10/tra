@@ -35,12 +35,12 @@ fun TestPointScreen(
     BackHandler { onBack() }
 
     val allPoints = TechnicianDataProvider.testPoints
-    var selectedBrand by remember { mutableStateOf(DeviceBrand.ALL) }
+    var selectedBrand by remember { mutableStateOf(DeviceBrand.XIAOMI) }
     var searchQuery by remember { mutableStateOf("") }
 
     val filteredPoints = remember(selectedBrand, searchQuery) {
         allPoints.filter { item ->
-            val matchBrand = (selectedBrand == DeviceBrand.ALL) || (item.brand == selectedBrand)
+            val matchBrand = (item.brand == selectedBrand)
             val matchQuery = searchQuery.isBlank() ||
                 item.modelName.contains(searchQuery, ignoreCase = true) ||
                 item.modeType.contains(searchQuery, ignoreCase = true) ||
@@ -114,7 +114,7 @@ fun TestPointScreen(
                             )
                             Text(
                                 text = "طرق التوصيل لوضع كوالكوم 9008 و BROM لمعالجة موت الأجهزة",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                             )
                         }
                     }
@@ -267,7 +267,6 @@ fun TestPointScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     val brands = listOf(
-                        DeviceBrand.ALL to "جميع الماركات",
                         DeviceBrand.XIAOMI to "شاومي",
                         DeviceBrand.HUAWEI to "هواوي",
                         DeviceBrand.SAMSUNG to "سامسونج",
@@ -288,6 +287,11 @@ fun TestPointScreen(
             }
 
             // Items
+            // Inline Ad Placement (AdSense)
+            item {
+                AdBannerPlaceholder(adSlotName = "إعلان - نقاط التيست بوينت")
+            }
+
             items(filteredPoints, key = { it.id }) { tp ->
                 Card(
                     shape = RoundedCornerShape(14.dp),
@@ -330,7 +334,7 @@ fun TestPointScreen(
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             text = "المعالج: ${tp.chipset}",
-                            style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF64748B))
+                            style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                         )
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -350,7 +354,7 @@ fun TestPointScreen(
                                     Text(
                                         text = "مخطط نقاط التوصيل:",
                                         style = MaterialTheme.typography.labelSmall.copy(
-                                            color = Color(0xFF94A3B8),
+                                            color = Color.Black,
                                             fontWeight = FontWeight.Bold
                                         )
                                     )
@@ -415,7 +419,7 @@ fun TestPointScreen(
                                 Text(
                                     text = step,
                                     style = MaterialTheme.typography.bodySmall.copy(
-                                        color = Color(0xFF334155),
+                                        color = Color.Black,
                                         lineHeight = 18.sp
                                     )
                                 )
@@ -444,7 +448,7 @@ fun TestPointScreen(
                                 Column {
                                     Text(
                                         text = "المنفذ في Device Manager:",
-                                        style = MaterialTheme.typography.labelSmall.copy(color = Color(0xFF64748B))
+                                        style = MaterialTheme.typography.labelSmall.copy(color = Color.Black)
                                     )
                                     Text(
                                         text = tp.deviceManagerPort,

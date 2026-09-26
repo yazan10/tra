@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.TechnicianDataProvider
 import com.example.ui.components.AdBannerPlaceholder
+import com.example.ui.components.SectionFilterStrip
 import com.example.ui.theme.ColorCategorySoftware
 import com.example.ui.theme.PrimaryBlue
 
@@ -35,6 +36,18 @@ fun SoftwareCoursesScreen(
 
     val courses = TechnicianDataProvider.softwareCourses
     var expandedId by remember { mutableStateOf<String?>(courses.firstOrNull()?.id) }
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedSection by remember { mutableStateOf("مبتدئ") }
+
+    val filteredCourses = remember(searchQuery, selectedSection) {
+        courses.filter { course ->
+            val matchSection = course.level.contains(selectedSection)
+            val matchQuery = searchQuery.isBlank() ||
+                course.title.contains(searchQuery, ignoreCase = true) ||
+                course.summary.contains(searchQuery, ignoreCase = true)
+            matchSection && matchQuery
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -101,14 +114,46 @@ fun SoftwareCoursesScreen(
                             )
                             Text(
                                 text = "خطوات التفليش، حل أخطاء Odin، فك البوت لودر، وتخطي FRP",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                             )
                         }
                     }
                 }
             }
 
-            items(courses, key = { it.id }) { course ->
+            // Search Bar
+            item {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { Text("ابحث في الدورات (تفليش، FRP، بوت لودر)...") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = ColorCategorySoftware) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            // Sections Strip
+            item {
+                SectionFilterStrip(
+                    sections = listOf("مبتدئ", "متوسط", "متقدم", "محترف"),
+                    selected = selectedSection,
+                    onSelect = { selectedSection = it },
+                    accentColor = ColorCategorySoftware
+                )
+            }
+
+            // Inline Ad Placement (AdSense)
+            item {
+                AdBannerPlaceholder(adSlotName = "إعلان - دورات السوفت وير")
+            }
+
+            items(filteredCourses, key = { it.id }) { course ->
                 val isExpanded = expandedId == course.id
 
                 Card(
@@ -154,7 +199,7 @@ fun SoftwareCoursesScreen(
                         Text(
                             text = course.summary,
                             style = MaterialTheme.typography.bodySmall.copy(
-                                color = Color(0xFF475569),
+                                color = Color.Black,
                                 lineHeight = 18.sp
                             )
                         )
@@ -166,7 +211,7 @@ fun SoftwareCoursesScreen(
                             text = "الأدوات والبرامج المطلوبة:",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF64748B)
+                                color = Color.Black
                             )
                         )
                         Spacer(modifier = Modifier.height(4.dp))

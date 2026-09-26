@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.TechnicianDataProvider
 import com.example.model.DeviceBrand
 import com.example.ui.components.AdBannerPlaceholder
+import com.example.ui.components.SectionFilterStrip
 import com.example.ui.theme.ColorCategoryImeiCheck
 import com.example.ui.theme.PrimaryBlue
 
@@ -42,8 +43,9 @@ fun ImeiCheckScreen(
     val context = LocalContext.current
 
     val allSites = TechnicianDataProvider.imeiCheckSites
-    var selectedBrand by remember { mutableStateOf<DeviceBrand?>(null) }
+    var selectedBrand by remember { mutableStateOf(DeviceBrand.APPLE) }
     var imeiInput by remember { mutableStateOf("") }
+    var siteQuery by remember { mutableStateOf("") }
 
     // Luhn algorithm verification for IMEI (15 digits)
     val isImeiValid = remember(imeiInput) {
@@ -65,9 +67,14 @@ fun ImeiCheckScreen(
         }
     }
 
-    val filteredSites = remember(selectedBrand) {
-        if (selectedBrand == null) allSites
-        else allSites.filter { it.brandCategory == selectedBrand || it.brandCategory == DeviceBrand.ALL }
+    val filteredSites = remember(selectedBrand, siteQuery) {
+        allSites.filter { site ->
+            val matchBrand = site.brandCategory == selectedBrand || site.brandCategory == DeviceBrand.ALL
+            val matchQuery = siteQuery.isBlank() ||
+                site.title.contains(siteQuery, ignoreCase = true) ||
+                site.description.contains(siteQuery, ignoreCase = true)
+            matchBrand && matchQuery
+        }
     }
 
     Scaffold(
@@ -135,7 +142,7 @@ fun ImeiCheckScreen(
                             )
                             Text(
                                 text = "تفتح جميع المواقع داخل التطبيق مباشرة بدون الحاجة للخروج",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                             )
                         }
                     }
@@ -198,7 +205,7 @@ fun ImeiCheckScreen(
                                         Text("رقم الـ IMEI غير سليم (خطأ في الرقم الأخير Checksum)", style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFFDC2626), fontWeight = FontWeight.Bold))
                                     }
                                     null -> {
-                                        Text("تبقى ${15 - imeiInput.length} أرقام لاكتمال الـ 15 رقماً", style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF64748B)))
+                                        Text("تبقى ${15 - imeiInput.length} أرقام لاكتمال الـ 15 رقماً", style = MaterialTheme.typography.bodySmall.copy(color = Color.Black))
                                     }
                                 }
                             }
@@ -207,7 +214,24 @@ fun ImeiCheckScreen(
                 }
             }
 
-            // Brand Selection Squares
+            // Site Search Bar
+            item {
+                OutlinedTextField(
+                    value = siteQuery,
+                    onValueChange = { siteQuery = it },
+                    placeholder = { Text("ابحث في مواقع الفحص (آيكلاود، شاومي)...") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = ColorCategoryImeiCheck) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            // Brand Selection Strip (scrollable)
             item {
                 Text(
                     text = "اختر ماركة الجهاز لفحصها:",
@@ -219,66 +243,60 @@ fun ImeiCheckScreen(
             }
 
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    BrandSelectorBox(
-                        title = "فحص أبل",
-                        icon = Icons.Default.PhoneIphone,
-                        isSelected = selectedBrand == DeviceBrand.APPLE,
-                        brandColor = Color(0xFF1E293B),
-                        onClick = { selectedBrand = if (selectedBrand == DeviceBrand.APPLE) null else DeviceBrand.APPLE },
-                        modifier = Modifier.weight(1f)
-                    )
-                    BrandSelectorBox(
-                        title = "فحص سامسونج",
-                        icon = Icons.Default.Smartphone,
-                        isSelected = selectedBrand == DeviceBrand.SAMSUNG,
-                        brandColor = Color(0xFF0D47A1),
-                        onClick = { selectedBrand = if (selectedBrand == DeviceBrand.SAMSUNG) null else DeviceBrand.SAMSUNG },
-                        modifier = Modifier.weight(1f)
-                    )
-                    BrandSelectorBox(
-                        title = "فحص شاومي",
-                        icon = Icons.Default.Devices,
-                        isSelected = selectedBrand == DeviceBrand.XIAOMI,
-                        brandColor = Color(0xFFFF6900),
-                        onClick = { selectedBrand = if (selectedBrand == DeviceBrand.XIAOMI) null else DeviceBrand.XIAOMI },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    BrandSelectorBox(
-                        title = "فحص أوبو",
-                        icon = Icons.Default.MobileFriendly,
-                        isSelected = selectedBrand == DeviceBrand.OPPO,
-                        brandColor = Color(0xFF059669),
-                        onClick = { selectedBrand = if (selectedBrand == DeviceBrand.OPPO) null else DeviceBrand.OPPO },
-                        modifier = Modifier.weight(1f)
-                    )
-                    BrandSelectorBox(
-                        title = "فحص ريلمي",
-                        icon = Icons.Default.FlashOn,
-                        isSelected = selectedBrand == DeviceBrand.REALME,
-                        brandColor = Color(0xFFD97706),
-                        onClick = { selectedBrand = if (selectedBrand == DeviceBrand.REALME) null else DeviceBrand.REALME },
-                        modifier = Modifier.weight(1f)
-                    )
-                    BrandSelectorBox(
-                        title = "الكل والشبكات",
-                        icon = Icons.Default.Public,
-                        isSelected = selectedBrand == null,
-                        brandColor = ColorCategoryImeiCheck,
-                        onClick = { selectedBrand = null },
-                        modifier = Modifier.weight(1f)
-                    )
+                    item {
+                        BrandSelectorBox(
+                            title = "فحص أبل",
+                            icon = Icons.Default.PhoneIphone,
+                            isSelected = selectedBrand == DeviceBrand.APPLE,
+                            brandColor = Color(0xFF1E293B),
+                            onClick = { selectedBrand = DeviceBrand.APPLE },
+                            modifier = Modifier.width(112.dp)
+                        )
+                    }
+                    item {
+                        BrandSelectorBox(
+                            title = "فحص سامسونج",
+                            icon = Icons.Default.Smartphone,
+                            isSelected = selectedBrand == DeviceBrand.SAMSUNG,
+                            brandColor = Color(0xFF0D47A1),
+                            onClick = { selectedBrand = DeviceBrand.SAMSUNG },
+                            modifier = Modifier.width(112.dp)
+                        )
+                    }
+                    item {
+                        BrandSelectorBox(
+                            title = "فحص شاومي",
+                            icon = Icons.Default.Devices,
+                            isSelected = selectedBrand == DeviceBrand.XIAOMI,
+                            brandColor = Color(0xFFFF6900),
+                            onClick = { selectedBrand = DeviceBrand.XIAOMI },
+                            modifier = Modifier.width(112.dp)
+                        )
+                    }
+                    item {
+                        BrandSelectorBox(
+                            title = "فحص أوبو",
+                            icon = Icons.Default.MobileFriendly,
+                            isSelected = selectedBrand == DeviceBrand.OPPO,
+                            brandColor = Color(0xFF059669),
+                            onClick = { selectedBrand = DeviceBrand.OPPO },
+                            modifier = Modifier.width(112.dp)
+                        )
+                    }
+                    item {
+                        BrandSelectorBox(
+                            title = "فحص ريلمي",
+                            icon = Icons.Default.FlashOn,
+                            isSelected = selectedBrand == DeviceBrand.REALME,
+                            brandColor = Color(0xFFD97706),
+                            onClick = { selectedBrand = DeviceBrand.REALME },
+                            modifier = Modifier.width(112.dp)
+                        )
+                    }
                 }
             }
 
@@ -294,6 +312,11 @@ fun ImeiCheckScreen(
             }
 
             // Sites List
+            // Inline Ad Placement (AdSense)
+            item {
+                AdBannerPlaceholder(adSlotName = "إعلان - فحص IMEI")
+            }
+
             items(filteredSites, key = { it.id }) { site ->
                 Card(
                     shape = RoundedCornerShape(14.dp),
@@ -334,7 +357,7 @@ fun ImeiCheckScreen(
                         Text(
                             text = site.description,
                             style = MaterialTheme.typography.bodySmall.copy(
-                                color = Color(0xFF475569),
+                                color = Color.Black,
                                 lineHeight = 18.sp
                             )
                         )
