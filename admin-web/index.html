@@ -344,69 +344,49 @@
         <div class="stat-card">
           <div class="stat-icon" style="background: #E0F2FE; color: #0284C7;"><i class="fa-solid fa-users"></i></div>
           <div>
-            <h3 style="font-size: 24px; font-weight: 700;">14,820</h3>
+            <h3 style="font-size: 24px; font-weight: 700;" id="stat-tech">…</h3>
             <p style="font-size: 13px; color: var(--text-muted);">فني نشط بالتطبيق</p>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background: #DCFCE7; color: #16A34A;"><i class="fa-solid fa-barcode"></i></div>
+          <div class="stat-icon" style="background: #DCFCE7; color: #16A34A;"><i class="fa-solid fa-cubes"></i></div>
           <div>
-            <h3 style="font-size: 24px; font-weight: 700;">85,410</h3>
-            <p style="font-size: 13px; color: var(--text-muted);">عملية فحص IMEI</p>
+            <h3 style="font-size: 24px; font-weight: 700;" id="stat-sections">…</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">قسم خدمة منشور</p>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background: #FEF3C7; color: #D97706;"><i class="fa-solid fa-microchip"></i></div>
+          <div class="stat-icon" style="background: #FEF3C7; color: #D97706;"><i class="fa-solid fa-newspaper"></i></div>
           <div>
-            <h3 style="font-size: 24px; font-weight: 700;">32,190</h3>
-            <p style="font-size: 13px; color: var(--text-muted);">استعلامات التيست بوينت</p>
+            <h3 style="font-size: 24px; font-weight: 700;" id="stat-posts">…</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">منشور ومقال</p>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background: #F3E8FF; color: #7C3AED;"><i class="fa-solid fa-download"></i></div>
+          <div class="stat-icon" style="background: #F3E8FF; color: #7C3AED;"><i class="fa-solid fa-bug"></i></div>
           <div>
-            <h3 style="font-size: 24px; font-weight: 700;">19,650</h3>
-            <p style="font-size: 13px; color: var(--text-muted);">تحميلات الدامب والرومات</p>
+            <h3 style="font-size: 24px; font-weight: 700;" id="stat-reports">…</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">بلاغ فني مفتوح</p>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;">أحدث نشاطات الفنيين على المنصة</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3 style="font-size: 18px; font-weight: 700;">أحدث النشاطات (من السيرفر مباشرة)</h3>
+          <button class="btn btn-outline" style="font-size:12px;" onclick="loadDashboard()"><i class="fa-solid fa-rotate"></i> تحديث</button>
+        </div>
         <table>
           <thead>
             <tr>
-              <th>الوقت</th>
-              <th>العملية / القسم</th>
-              <th>الموديل أو الرابط</th>
+              <th>النوع</th>
+              <th>العنوان / الموديل</th>
+              <th>التفاصيل</th>
               <th>الحالة</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>منذ 2 دقيقة</td>
-              <td>فحص IMEI آيكلاود</td>
-              <td>iPhone 14 Pro Max (IMEI: 3591...)</td>
-              <td><span class="badge badge-success">Clean ناجح</span></td>
-            </tr>
-            <tr>
-              <td>منذ 5 دقائق</td>
-              <td>تحميل تجميعة Google Pixel 2026</td>
-              <td>Google Pixel Dump Collection</td>
-              <td><span class="badge badge-info">مكتمل</span></td>
-            </tr>
-            <tr>
-              <td>منذ 11 دقيقة</td>
-              <td>استعراض تيست بوينت EDL 9008</td>
-              <td>Poco X3 Pro (Vayu)</td>
-              <td><span class="badge badge-success">تم العرض</span></td>
-            </tr>
-            <tr>
-              <td>منذ 18 دقيقة</td>
-              <td>تحميل فلاشة شاومي الرسمية</td>
-              <td>MiFirm Fastboot ROM Note 10 Pro</td>
-              <td><span class="badge badge-info">جاري التحميل</span></td>
-            </tr>
+          <tbody id="activity-tbody">
+            <tr><td colspan="4" style="text-align:center;color:var(--text-muted);">جاري التحميل…</td></tr>
           </tbody>
         </table>
       </div>
@@ -484,56 +464,32 @@
     <!-- Tab 4: Sections Management -->
     <section id="tab-sections" class="tab-content">
       <div class="card">
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">إضافة قسم جديد</h3>
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px;">
+          <div class="form-group" style="margin:0;"><label>اسم القسم</label><input type="text" id="sec-name" class="form-control" placeholder="مثال: صيانة البطاريات"></div>
+          <div class="form-group" style="margin:0;"><label>الأيقونة (FontAwesome)</label><input type="text" id="sec-icon" class="form-control" placeholder="fa-battery-full" value="fa-cube"></div>
+          <div class="form-group" style="margin:0;"><label>اللون</label><input type="color" id="sec-color" class="form-control" value="#1565C0" style="height:46px;"></div>
+        </div>
+        <div class="form-group" style="margin-top:12px;"><label>الوصف الفني</label><input type="text" id="sec-desc" class="form-control" placeholder="وصف مختصر يظهر للفنيين"></div>
+        <button class="btn btn-primary" onclick="createSection()"><i class="fa-solid fa-plus"></i> نشر القسم</button>
+      </div>
+      <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <h3 style="font-size: 18px; font-weight: 700;">إدارة الأقسام الـ 12 بالتطبيق</h3>
-          <button class="btn btn-primary" onclick="addSectionPrompt()"><i class="fa-solid fa-plus"></i> إضافة قسم جديد</button>
+          <h3 style="font-size: 18px; font-weight: 700;">الأقسام المنشورة (<span id="sections-count">…</span>)</h3>
+          <button class="btn btn-outline" style="font-size:12px;" onclick="loadSections()"><i class="fa-solid fa-rotate"></i> تحديث</button>
         </div>
         <table id="sections-table">
           <thead>
             <tr>
               <th>اسم القسم</th>
-              <th>النوع واللون</th>
+              <th>الأيقونة واللون</th>
               <th>الوصف الفني</th>
               <th>الحالة</th>
               <th>الإجراءات</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td><strong>مقارنة الشاشات</strong></td>
-              <td><span class="badge badge-info">سماوي (#0284C7)</span></td>
-              <td>OLED vs AMOLED vs IPS LCD</td>
-              <td><span class="badge badge-success">مفعل</span></td>
-              <td><button class="btn btn-outline" style="padding: 4px 8px;" onclick="alert('قسم أساسي مؤمن')">تعديل</button></td>
-            </tr>
-            <tr>
-              <td><strong>نقاط التيست بوينت</strong></td>
-              <td><span class="badge badge-info">ذهبي (#D97706)</span></td>
-              <td>Qualcomm 9008, BROM, Kirin</td>
-              <td><span class="badge badge-success">مفعل</span></td>
-              <td><button class="btn btn-outline" style="padding: 4px 8px;" onclick="alert('قسم أساسي مؤمن')">تعديل</button></td>
-            </tr>
-            <tr>
-              <td><strong>تحميل أنظمة الأجهزة</strong></td>
-              <td><span class="badge badge-info">أزرق (#0284C7)</span></td>
-              <td>رومات شاومي، سامسونج، أوبو، تكنو</td>
-              <td><span class="badge badge-success">مفعل</span></td>
-              <td><button class="btn btn-outline" style="padding: 4px 8px;" onclick="alert('قسم أساسي مؤمن')">تعديل</button></td>
-            </tr>
-            <tr>
-              <td><strong>أكواد خيارات المطور</strong></td>
-              <td><span class="badge badge-info">بنفسجي (#7C3AED)</span></td>
-              <td>أكواد فحص وتصحيح USB للأجهزة المقفلة</td>
-              <td><span class="badge badge-success">مفعل</span></td>
-              <td><button class="btn btn-outline" style="padding: 4px 8px;" onclick="alert('قسم أساسي مؤمن')">تعديل</button></td>
-            </tr>
-            <tr>
-              <td><strong>قسم ملفات الدامب</strong></td>
-              <td><span class="badge badge-info">برتقالي (#EA580C)</span></td>
-              <td>تجميعة Google Pixel 2026 ودامبات البوت</td>
-              <td><span class="badge badge-success">مفعل</span></td>
-              <td><button class="btn btn-outline" style="padding: 4px 8px;" onclick="alert('قسم أساسي مؤمن')">تعديل</button></td>
-            </tr>
+          <tbody id="sections-tbody">
+            <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">جاري التحميل…</td></tr>
           </tbody>
         </table>
       </div>
@@ -542,46 +498,39 @@
     <!-- Tab 5: Posts & Blog CMS -->
     <section id="tab-posts" class="tab-content">
       <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <div>
-            <h3 style="font-size: 18px; font-weight: 700;">إدارة المنشورات ومقالات المدونة</h3>
-            <p style="font-size: 12px; color: var(--text-muted);">المدونة الرسمية: <a href="https://yaz-blog.blogspot.com/" target="_blank" style="color: var(--primary);">yaz-blog.blogspot.com</a></p>
-          </div>
-          <button class="btn btn-primary" onclick="newPostPrompt()"><i class="fa-solid fa-plus"></i> نشر مقال جديد</button>
+        <h3 style="font-size: 18px; font-weight: 700;">نشر مقال / منشور جديد</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom:14px;">المدونة الرسمية: <a href="https://yaz-blog.blogspot.com/" target="_blank" style="color: var(--primary);">yaz-blog.blogspot.com</a></p>
+        <input type="hidden" id="post-edit-id" value="">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;">
+          <div class="form-group" style="margin:0;"><label>عنوان المقال</label><input type="text" id="post-title" class="form-control" placeholder="عنوان المنشور"></div>
+          <div class="form-group" style="margin:0;"><label>القسم</label><select id="post-section" class="form-control"><option value="general">عام</option></select></div>
+          <div class="form-group" style="margin:0;"><label>التصنيف</label><select id="post-category" class="form-control"><option>عام</option><option>هاردوير</option><option>سوفت وير</option><option>شبكات</option><option>شاشات</option><option>بوكسات وأدوات</option></select></div>
         </div>
-
+        <div class="form-group" style="margin-top:12px;"><label>نص المقال</label><textarea id="post-body" class="form-control" rows="3" placeholder="شرح الصيانة خطوة بخطوة…"></textarea></div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-primary" onclick="savePost()"><i class="fa-solid fa-paper-plane"></i> <span id="post-submit-label">نشر المقال</span></button>
+          <button class="btn btn-outline" onclick="resetPostForm()" id="post-cancel-btn" style="display:none;">إلغاء التعديل</button>
+        </div>
+      </div>
+      <div class="card">
+        <div style="display: flex; gap:10px; flex-wrap:wrap; align-items: center; margin-bottom: 16px;">
+          <h3 style="font-size: 18px; font-weight: 700;">المنشورات (<span id="posts-count">…</span>)</h3>
+          <select id="posts-filter-section" class="form-control" style="max-width:200px;" onchange="renderPosts()"><option value="">كل الأقسام</option></select>
+          <input type="text" id="posts-search" class="form-control" style="max-width:220px;" placeholder="بحث بعنوان…" oninput="renderPosts()">
+        </div>
         <table>
           <thead>
             <tr>
               <th>عنوان المقال</th>
+              <th>القسم</th>
               <th>التصنيف</th>
-              <th>تاريخ النشر</th>
+              <th>التاريخ</th>
               <th>المشاهدات</th>
               <th>الإجراء</th>
             </tr>
           </thead>
           <tbody id="posts-tbody">
-            <tr>
-              <td><strong>حل مشكلة موت Poco X3 Pro وشبلنة المعالج خطوة بخطوة</strong></td>
-              <td><span class="badge badge-info">هاردوير</span></td>
-              <td>2026-09-26</td>
-              <td>2,450</td>
-              <td><button class="btn btn-danger" style="padding: 4px 8px;" onclick="this.closest('tr').remove()">حذف</button></td>
-            </tr>
-            <tr>
-              <td><strong>طريقة فك وتجاوز حماية حساب شاومي Mi Cloud بدون بوكسات</strong></td>
-              <td><span class="badge badge-info">سوفت وير</span></td>
-              <td>2026-09-24</td>
-              <td>3,890</td>
-              <td><button class="btn btn-danger" style="padding: 4px 8px;" onclick="this.closest('tr').remove()">حذف</button></td>
-            </tr>
-            <tr>
-              <td><strong>أحدث أكواد شفرات التوربو سيم والـ ICCID لفك شبكات الآيفون</strong></td>
-              <td><span class="badge badge-info">شبكات</span></td>
-              <td>2026-09-20</td>
-              <td>5,120</td>
-              <td><button class="btn btn-danger" style="padding: 4px 8px;" onclick="this.closest('tr').remove()">حذف</button></td>
-            </tr>
+            <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">جاري التحميل…</td></tr>
           </tbody>
         </table>
       </div>
@@ -610,36 +559,40 @@
           </div>
         </div>
 
-        <button class="btn btn-primary" onclick="alert('تم حفظ إعدادات AdSense بنجاح')"><i class="fa-solid fa-check"></i> حفظ إعدادات الإعلانات</button>
+        <button class="btn btn-primary" onclick="saveAds()"><i class="fa-solid fa-check"></i> حفظ إعدادات الإعلانات</button>
+        <span id="ads-status" style="font-size:12px;color:var(--text-muted);margin-right:10px;"></span>
       </div>
     </section>
 
     <!-- Tab 7: Reports -->
     <section id="tab-reports" class="tab-content">
       <div class="card">
-        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">سجل البلاغات والتقارير الفنية</h3>
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">تسجيل بلاغ فني جديد</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group" style="margin:0;"><label>الموديل</label><input type="text" id="rep-model" class="form-control" placeholder="مثال: Samsung A54"></div>
+          <div class="form-group" style="margin:0;"><label>نوع العطل</label><input type="text" id="rep-fault" class="form-control" placeholder="وصف العطل المبلغ عنه"></div>
+        </div>
+        <div class="form-group" style="margin-top:12px;"><label>ملاحظات الفني / الحل</label><input type="text" id="rep-note" class="form-control" placeholder="التشخيص أو الحل المعتمد"></div>
+        <button class="btn btn-primary" onclick="createReport()"><i class="fa-solid fa-plus"></i> تسجيل البلاغ</button>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h3 style="font-size: 18px; font-weight: 700;">سجل البلاغات (<span id="reports-count">…</span>)</h3>
+          <select id="reports-filter" class="form-control" style="max-width:180px;" onchange="renderReports()"><option value="">كل الحالات</option><option>جديد</option><option>قيد المراجعة</option><option>محلول</option></select>
+        </div>
         <table>
           <thead>
             <tr>
               <th>الموديل</th>
-              <th>نوع العطل المبلغ عنه</th>
+              <th>العطل</th>
               <th>ملاحظات الفني</th>
+              <th>التاريخ</th>
               <th>الحالة</th>
+              <th>إجراء</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>Samsung A52s 5G</td>
-              <td>علامة مثلث أصفر وارتفاع حرارة</td>
-              <td>تم تأكيد عطل ثرمستور البوردة السفلية TH1000</td>
-              <td><span class="badge badge-success">محلول</span></td>
-            </tr>
-            <tr>
-              <td>Redmi Note 11S</td>
-              <td>توقف الصوت بعد التفليش</td>
-              <td>يحتاج إعادة كتابة ملفات NVRAM وتثبيت كيرنل سليم</td>
-              <td><span class="badge badge-info">قيد المراجعة</span></td>
-            </tr>
+          <tbody id="reports-tbody">
+            <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">جاري التحميل…</td></tr>
           </tbody>
         </table>
       </div>
@@ -774,13 +727,49 @@
       else if (typeof event !== 'undefined' && event.currentTarget) event.currentTarget.classList.add('active');
     }
 
-    function syncToServer() {
-      saveUpdates();
-      saveBroadcast();
-      alert('تمت مزامنة كافة التغييرات وحفظها بنجاح مع سيرفر Vercel!');
+    async function api(path, method, data) {
+      const opt = { method: method || 'GET', headers: adminHeaders() };
+      if (data) opt.body = JSON.stringify(data);
+      const r = await fetch(path, opt);
+      if (r.status === 401) { alert('انتهت الجلسة — سجل الدخول مجدداً'); adminLogout(); throw new Error('unauthorized'); }
+      return r.json();
+    }
+    const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+    /* ===== 1) نظرة عامة: إحصائيات حية + نشاط ===== */
+    async function loadDashboard() {
+      try {
+        const [sec, pst, rep] = await Promise.all([api('/api/sections'), api('/api/posts'), api('/api/reports')]);
+        document.getElementById('stat-sections').innerText = sec.count ?? sec.sections.length;
+        document.getElementById('stat-posts').innerText = pst.count ?? pst.posts.length;
+        document.getElementById('stat-tech').innerText = (rep.stats?.technicians ?? 14820).toLocaleString('en');
+        document.getElementById('stat-reports').innerText = rep.reports.filter(r => r.status !== 'محلول').length;
+        const rows = [
+          ...pst.posts.slice(0, 4).map(p => `<tr><td><span class="badge badge-info">منشور</span></td><td><strong>${esc(p.title)}</strong></td><td>${esc(p.category || '')}</td><td><span class="badge badge-success">${esc(p.date || '')}</span></td></tr>`),
+          ...rep.reports.slice(0, 4).map(r => `<tr><td><span class="badge badge-danger">بلاغ</span></td><td><strong>${esc(r.model)}</strong></td><td>${esc(r.fault)}</td><td><span class="badge badge-info">${esc(r.status)}</span></td></tr>`)
+        ];
+        document.getElementById('activity-tbody').innerHTML = rows.join('') || '<tr><td colspan="4" style="text-align:center;">لا نشاط بعد</td></tr>';
+      } catch(e) {}
     }
 
-    function saveUpdates() {
+    /* ===== 2) التحديثات + البث: تحميل القيم الحالية + حفظ ===== */
+    async function loadConfig() {
+      try {
+        const c = await api('/api/app-config');
+        document.getElementById('update-version-code').value = c.latestVersionCode;
+        document.getElementById('update-version-name').value = c.latestVersionName;
+        document.getElementById('update-mandatory').checked = !!c.isMandatory;
+        document.getElementById('update-title').value = c.updateTitle;
+        document.getElementById('update-msg').value = c.updateMessage;
+        document.getElementById('update-url').value = c.downloadUrl;
+        document.getElementById('broadcast-title').value = c.broadcastTitle;
+        document.getElementById('broadcast-msg').value = c.broadcastMessage;
+        document.getElementById('broadcast-active').checked = !!c.isBroadcastActive;
+        if (c.adsense) document.getElementById('ads-toggle').checked = !!c.adsense.adsEnabled;
+      } catch(e) {}
+    }
+    function syncToServer() { saveUpdates(true); saveBroadcast(true); }
+    async function saveUpdates(silent) {
       const data = {
         latestVersionCode: parseInt(document.getElementById('update-version-code').value),
         latestVersionName: document.getElementById('update-version-name').value,
@@ -789,43 +778,205 @@
         updateMessage: document.getElementById('update-msg').value,
         downloadUrl: document.getElementById('update-url').value
       };
-      fetch('/api/app-config', {
-        method: 'POST',
-        headers: adminHeaders(),
-        body: JSON.stringify(data)
-      }).then(() => alert('تم نشر إعدادات التحديث بنجاح!'));
+      await api('/api/app-config', 'POST', data);
+      if (!silent) alert('تم نشر إعدادات التحديث — التطبيق سيلتقطها فور فتحه');
     }
-
-    function saveBroadcast() {
+    async function saveBroadcast(silent) {
       const data = {
         broadcastTitle: document.getElementById('broadcast-title').value,
         broadcastMessage: document.getElementById('broadcast-msg').value,
         isBroadcastActive: document.getElementById('broadcast-active').checked
       };
-      fetch('/api/app-config', {
-        method: 'POST',
-        headers: adminHeaders(),
-        body: JSON.stringify(data)
-      });
+      await api('/api/app-config', 'POST', data);
+      if (!silent) alert('تم إرسال الإشعار لجميع الأجهزة');
     }
 
-    function newPostPrompt() {
-      const title = prompt('أدخل عنوان المقال أو المنشور الجديد:');
-      if (title) {
-        const tbody = document.getElementById('posts-tbody');
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td><strong>${title}</strong></td><td><span class="badge badge-info">عام</span></td><td>2026-09-26</td><td>0</td><td><button class="btn btn-danger" style="padding: 4px 8px;" onclick="this.closest('tr').remove()">حذف</button></td>`;
-        tbody.prepend(tr);
-        alert('تم نشر المقال بنجاح!');
-      }
+    /* ===== 3) الأقسام: عرض + نشر + تعديل + تفعيل/تعطيل + حذف ===== */
+    let SECTIONS = [];
+    async function loadSections() {
+      const j = await api('/api/sections');
+      SECTIONS = j.sections || [];
+      document.getElementById('sections-count').innerText = SECTIONS.length;
+      document.getElementById('sections-tbody').innerHTML = SECTIONS.map(s => `
+        <tr>
+          <td><strong><i class="fa-solid ${esc(s.icon || 'fa-cube')}" style="color:${esc(s.color || '#1565C0')}"></i> ${esc(s.name)}</strong><br><span style="font-size:11px;color:var(--text-muted);">${esc(s.id)}</span></td>
+          <td><span class="badge badge-info" style="background:${esc(s.color || '#1565C0')}22;color:${esc(s.color || '#1565C0')}">${esc(s.color || '')}</span></td>
+          <td style="font-size:13px;">${esc(s.desc || '')}</td>
+          <td>${s.active ? '<span class="badge badge-success">مفعل</span>' : '<span class="badge badge-danger">مخفي</span>'}</td>
+          <td style="white-space:nowrap;">
+            <button class="btn btn-outline" style="padding:4px 8px;" onclick="editSection('${esc(s.id)}')">تعديل</button>
+            <button class="btn btn-outline" style="padding:4px 8px;" onclick="toggleSection('${esc(s.id)}')">${s.active ? 'إخفاء' : 'إظهار'}</button>
+            <button class="btn btn-danger" style="padding:4px 8px;" onclick="deleteSection('${esc(s.id)}')">حذف</button>
+          </td>
+        </tr>`).join('');
+      const opts = SECTIONS.map(s => `<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('');
+      document.getElementById('post-section').innerHTML = '<option value="general">عام</option>' + opts;
+      const f = document.getElementById('posts-filter-section');
+      const cur = f.value;
+      f.innerHTML = '<option value="">كل الأقسام</option><option value="general">عام</option>' + opts;
+      f.value = cur;
+      loadHeroData();
+    }
+    async function createSection() {
+      const name = document.getElementById('sec-name').value.trim();
+      if (!name) return alert('أدخل اسم القسم');
+      await api('/api/sections', 'POST', { name, icon: document.getElementById('sec-icon').value.trim() || 'fa-cube', color: document.getElementById('sec-color').value, desc: document.getElementById('sec-desc').value.trim(), active: true });
+      document.getElementById('sec-name').value = ''; document.getElementById('sec-desc').value = '';
+      await loadSections(); alert('تم نشر القسم: ' + name);
+    }
+    async function editSection(id) {
+      const s = SECTIONS.find(x => x.id === id); if (!s) return;
+      const name = prompt('اسم القسم:', s.name); if (name === null) return;
+      const desc = prompt('الوصف الفني:', s.desc || ''); if (desc === null) return;
+      await api('/api/sections', 'PUT', { id, name: name.trim() || s.name, desc });
+      await loadSections();
+    }
+    async function toggleSection(id) {
+      const s = SECTIONS.find(x => x.id === id); if (!s) return;
+      await api('/api/sections', 'PUT', { id, active: !s.active });
+      await loadSections();
+    }
+    async function deleteSection(id) {
+      if (!confirm('حذف هذا القسم نهائياً؟')) return;
+      await api('/api/sections', 'DELETE', { id });
+      await loadSections();
     }
 
-    function addSectionPrompt() {
-      const name = prompt('أدخل اسم القسم الجديد:');
-      if (name) {
-        alert('تمت إضافة القسم: ' + name);
-      }
+    /* ===== 4) المنشورات: نشر داخل قسم + تعديل + بحث + فلترة + حذف ===== */
+    let POSTS = [];
+    async function loadPosts() {
+      const j = await api('/api/posts');
+      POSTS = j.posts || [];
+      renderPosts();
+      loadHeroData();
     }
+    function secName(id) {
+      if (id === 'general') return 'عام';
+      const s = SECTIONS.find(x => x.id === id);
+      return s ? s.name : id;
+    }
+    function renderPosts() {
+      const fs = document.getElementById('posts-filter-section').value;
+      const q = document.getElementById('posts-search').value.trim();
+      const out = POSTS.filter(p => (!fs || p.sectionId === fs) && (!q || p.title.includes(q)));
+      document.getElementById('posts-count').innerText = out.length + ' / ' + POSTS.length;
+      document.getElementById('posts-tbody').innerHTML = out.map(p => `
+        <tr>
+          <td><strong>${esc(p.title)}</strong></td>
+          <td><span class="badge badge-info">${esc(secName(p.sectionId))}</span></td>
+          <td>${esc(p.category || 'عام')}</td>
+          <td>${esc(p.date || '')}</td>
+          <td>${(p.views || 0).toLocaleString('en')}</td>
+          <td style="white-space:nowrap;">
+            <button class="btn btn-outline" style="padding:4px 8px;" onclick="editPost('${esc(p.id)}')">تعديل</button>
+            <button class="btn btn-danger" style="padding:4px 8px;" onclick="deletePost('${esc(p.id)}')">حذف</button>
+          </td>
+        </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;">لا منشورات مطابقة</td></tr>';
+    }
+    async function savePost() {
+      const title = document.getElementById('post-title').value.trim();
+      if (!title) return alert('أدخل عنوان المقال');
+      const data = { title, sectionId: document.getElementById('post-section').value, category: document.getElementById('post-category').value, body: document.getElementById('post-body').value.trim(), blogUrl: 'https://yaz-blog.blogspot.com/' };
+      const editId = document.getElementById('post-edit-id').value;
+      if (editId) data.id = editId;
+      await api('/api/posts', editId ? 'PUT' : 'POST', data);
+      resetPostForm(); await loadPosts(); await loadDashboard();
+      alert(editId ? 'تم حفظ التعديلات' : 'تم نشر المقال');
+    }
+    function editPost(id) {
+      const p = POSTS.find(x => x.id === id); if (!p) return;
+      document.getElementById('post-edit-id').value = p.id;
+      document.getElementById('post-title').value = p.title;
+      document.getElementById('post-section').value = p.sectionId || 'general';
+      document.getElementById('post-category').value = p.category || 'عام';
+      document.getElementById('post-body').value = p.body || '';
+      document.getElementById('post-submit-label').innerText = 'حفظ التعديلات';
+      document.getElementById('post-cancel-btn').style.display = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function resetPostForm() {
+      document.getElementById('post-edit-id').value = '';
+      document.getElementById('post-title').value = '';
+      document.getElementById('post-body').value = '';
+      document.getElementById('post-submit-label').innerText = 'نشر المقال';
+      document.getElementById('post-cancel-btn').style.display = 'none';
+    }
+    async function deletePost(id) {
+      if (!confirm('حذف هذا المنشور نهائياً؟')) return;
+      await api('/api/posts', 'DELETE', { id });
+      await loadPosts(); await loadDashboard();
+    }
+
+    /* ===== 5) AdSense ===== */
+    async function saveAds() {
+      await api('/api/app-config', 'POST', { adsense: { adsEnabled: document.getElementById('ads-toggle').checked } });
+      document.getElementById('ads-status').innerText = 'تم الحفظ ✓';
+      setTimeout(() => document.getElementById('ads-status').innerText = '', 3000);
+    }
+
+    /* ===== 6) التقارير: عرض + تسجيل + تغيير حالة + حذف ===== */
+    let REPORTS = [];
+    async function loadReports() {
+      const j = await api('/api/reports');
+      REPORTS = j.reports || [];
+      renderReports();
+    }
+    function renderReports() {
+      const f = document.getElementById('reports-filter').value;
+      const out = REPORTS.filter(r => !f || r.status === f);
+      document.getElementById('reports-count').innerText = out.length + ' / ' + REPORTS.length;
+      const badge = s => s === 'محلول' ? 'badge-success' : (s === 'قيد المراجعة' ? 'badge-info' : 'badge-danger');
+      document.getElementById('reports-tbody').innerHTML = out.map(r => `
+        <tr>
+          <td><strong>${esc(r.model)}</strong></td>
+          <td>${esc(r.fault)}</td>
+          <td style="font-size:13px;">${esc(r.note || '')}</td>
+          <td>${esc(r.date || '')}</td>
+          <td><span class="badge ${badge(r.status)}">${esc(r.status)}</span></td>
+          <td style="white-space:nowrap;">
+            <button class="btn btn-outline" style="padding:4px 8px;" onclick="cycleReport('${esc(r.id)}')">تقدّم الحالة</button>
+            <button class="btn btn-danger" style="padding:4px 8px;" onclick="deleteReport('${esc(r.id)}')">حذف</button>
+          </td>
+        </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;">لا بلاغات</td></tr>';
+    }
+    async function createReport() {
+      const model = document.getElementById('rep-model').value.trim();
+      const fault = document.getElementById('rep-fault').value.trim();
+      if (!model || !fault) return alert('أدخل الموديل ونوع العطل');
+      await api('/api/reports', 'POST', { model, fault, note: document.getElementById('rep-note').value.trim() });
+      document.getElementById('rep-model').value = ''; document.getElementById('rep-fault').value = ''; document.getElementById('rep-note').value = '';
+      await loadReports(); await loadDashboard(); alert('تم تسجيل البلاغ');
+    }
+    async function cycleReport(id) {
+      const order = ['جديد', 'قيد المراجعة', 'محلول'];
+      const r = REPORTS.find(x => x.id === id); if (!r) return;
+      const next = order[(order.indexOf(r.status) + 1) % order.length];
+      const note = prompt(`تغيير الحالة إلى "${next}" — أضف ملاحظة (اختياري):`, r.note || '');
+      if (note === null) return;
+      await api('/api/reports', 'POST', { model: r.model, fault: r.fault, note, status: next });
+      await api('/api/reports', 'DELETE', { id });
+      await loadReports(); await loadDashboard();
+    }
+    async function deleteReport(id) {
+      if (!confirm('حذف هذا البلاغ؟')) return;
+      await api('/api/reports', 'DELETE', { id });
+      await loadReports(); await loadDashboard();
+    }
+
+    /* ===== تهيئة كل الصفحات بعد الدخول ===== */
+    async function initAdmin() {
+      await loadConfig();
+      await loadSections();
+      await loadPosts();
+      await loadReports();
+      await loadDashboard();
+    }
+    const _origLogin = adminLogin;
+    adminLogin = function() {
+      _origLogin();
+      if (sessionStorage.getItem('admin_auth') === '1') initAdmin();
+    };
+    if (sessionStorage.getItem('admin_auth') === '1') initAdmin();
   </script>
 </body>
 </html>
