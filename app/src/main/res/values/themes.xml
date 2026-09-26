@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MyApplication" parent="android:Theme.DeviceDefault.NoActionBar">
+        <item name="android:fontFamily">@font/ibm_plex_sans_arabic_bold</item>
+    </style>
+</resources>

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phone Traffic - لوحة الإدارة والتحكم الشاملة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --primary: #1565C0;
+      --primary-dark: #0D47A1;
+      --primary-light: #1E88E5;
+      --accent: #0284C7;
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --success: #16A34A;
+      --danger: #DC2626;
+      --warning: #F59E0B;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+    }
+    /* Sidebar */
+    aside {
+      width: 280px;
+      background: #FFFFFF;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .logo-area {
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--primary);
+      color: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .nav-links {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: #EFF6FF;
+      color: var(--primary);
+    }
+    /* Main Content */
+    main {
+      flex: 1;
+      padding: 32px;
+      overflow-y: auto;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .header-title h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0F172A;
+    }
+    .header-title p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .grid-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .stat-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    /* Form groups */
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #1E293B;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+    }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: #F8FAFC;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    th {
+      background: #F8FAFC;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .badge-success { background: #DCFCE7; color: #166534; }
+    .badge-danger { background: #FEE2E2; color: #991B1B; }
+    .badge-info { background: #E0F2FE; color: #0369A1; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside>
+    <div class="logo-area">
+      <div class="logo-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+      <div>
+        <h2 style="font-size: 16px; font-weight: 700;">Phone Traffic</h2>
+        <span style="font-size: 12px; color: var(--text-muted);">لوحة تحكم السيرفر</span>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <div class="nav-item active" onclick="switchTab('tab-overview')">
+        <i class="fa-solid fa-chart-pie"></i> نظرة عامة والتقارير
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-updates')">
+        <i class="fa-solid fa-arrows-rotate"></i> التحديثات والإصدارات الإجبارية
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-broadcast')">
+        <i class="fa-solid fa-bullhorn"></i> بث الإشعارات المباشرة
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-sections')">
+        <i class="fa-solid fa-cubes"></i> إدارة الأقسام الـ 12
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-posts')">
+        <i class="fa-solid fa-newspaper"></i> إدارة المنشورات والمدونة
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-adsense')">
+        <i class="fa-solid fa-rectangle-ad"></i> إعلانات AdSense
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-reports')">
+        <i class="fa-solid fa-bug"></i> تقارير وأعطال الفنيين
+      </div>
+    </nav>
+    <div style="padding: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted);">
+      <p>الإصدار: v1.0.0 (API v2)</p>
+      <p>السيرفر متصل بنجاح ✓</p>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <header>
+      <div class="header-title">
+        <h1 id="page-heading">نظرة عامة والتقارير</h1>
+        <p id="page-subheading">إحصائيات تطبيق Phone Traffic وأداء الأقسام والتفاعل</p>
+      </div>
+      <button class="btn btn-primary" onclick="syncToServer()"><i class="fa-solid fa-cloud-arrow-up"></i> حفظ ومزامنة مع التطبيق</button>
+    </header>
+
+    <!-- Tab 1: Overview -->
+    <section id="tab-overview" class="tab-content active">
+      <div class="grid-stats">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #E0F2FE; color: #0284C7;"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <h3 style="font-size: 24px; font-weight: 700;">14,820</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">فني نشط بالتطبيق</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #DCFCE7; color: #16A34A;"><i class="fa-solid fa-barcode"></i></div>
+          <div>
+            <h3 style="font-size: 24px; font-weight: 700;">85,410</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">عملية فحص IMEI</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #FEF3C7; color: #D97706;"><i class="fa-solid fa-microchip"></i></div>
+          <div>
+            <h3 style="font-size: 24px; font-weight: 700;">32,190</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">استعلامات التيست بوينت</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #F3E8FF; color: #7C3AED;"><i class="fa-solid fa-download"></i></div>
+          <div>
+            <h3 style="font-size: 24px; font-weight: 700;">19,650</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">تحميلات الدامب والرومات</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;">أحدث نشاطات الفنيين على المنصة</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>الوقت</th>
+              <th>العملية / القسم</th>
+              <th>الموديل أو الرابط</th>
+              <th>الحالة</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>منذ 2 دقيقة</td>
+              <td>فحص IMEI آيكلاود</td>
+              <td>iPhone 14 Pro Max (IMEI: 3591...)</td>
+              <td><span class="badge badge-success">Clean ناجح</span></td>
+            </tr>
+            <tr>
+              <td>منذ 5 دقائق</td>
+              <td>تحميل تجميعة Google Pixel 2026</td>
+              <td>Google Pixel Dump Collection</td>
+              <td><span class="badge badge-info">مكتمل</span></td>
+            </tr>
+            <tr>
+              <td>منذ 11 دقيقة</td>
+              <td>استعراض تيست بوينت EDL 9008</td>
+              <td>Poco X3 Pro (Vayu)</td>
+              <td><span class="badge badge-success">تم العرض</span></td>
+            </tr>
+            <tr>
+              <td>منذ 18 دقيقة</td>
+              <td>تحميل فلاشة شاومي الرسمية</td>
+              <td>MiFirm Fastboot ROM Note 10 Pro</td>
+              <td><span class="badge badge-info">جاري التحميل</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Tab 2: Updates & Version Control -->
+    <section id="tab-updates" class="tab-content">
+      <div class="card">
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">إدارة إصدار التطبيق والتحديث الإجباري</h3>
+        
+        <div class="toggle-row">
+          <input type="checkbox" id="update-mandatory" style="width: 20px; height: 20px;">
+          <div>
+            <label for="update-mandatory" style="font-weight: 700; cursor: pointer;">تفعيل التحديث الإجباري (Mandatory Update Lock)</label>
+            <p style="font-size: 12px; color: var(--text-muted);">عند تفعيل هذا الخيار سيتم قفل التطبيق فوراً لجميع المستخدمين الذين يملكون إصداراً قديماً حتى يقوموا بالتحديث.</p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label>رقم الإصدار (Version Code)</label>
+            <input type="number" id="update-version-code" class="form-control" value="2">
+          </div>
+          <div class="form-group">
+            <label>اسم الإصدار (Version Name)</label>
+            <input type="text" id="update-version-name" class="form-control" value="1.1.0">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>عنوان نافذة التحديث</label>
+          <input type="text" id="update-title" class="form-control" value="تحديث إجباري جديد لتطبيق فون ترافيك">
+        </div>
+
+        <div class="form-group">
+          <label>رسالة التحديث وما الجديد للمستخدمين</label>
+          <textarea id="update-msg" class="form-control" rows="3">تمت إضافة توافقات شاشات أوبو وريدمي لعام 2026، ودامبات جديدة، وتحديث روابط السيرفرات السريعة.</textarea>
+        </div>
+
+        <div class="form-group">
+          <label>رابط تحميل التحديث (APK أو القناة أو المتجر)</label>
+          <input type="url" id="update-url" class="form-control" value="https://t.me/Yazunlo">
+        </div>
+
+        <button class="btn btn-primary" onclick="saveUpdates()"><i class="fa-solid fa-save"></i> حفظ ونشر التحديث فوراً</button>
+      </div>
+    </section>
+
+    <!-- Tab 3: Broadcast Notifications -->
+    <section id="tab-broadcast" class="tab-content">
+      <div class="card">
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">إرسال إشعار فوري في أعلى الشاشة الرئيسية</h3>
+        <div class="toggle-row">
+          <input type="checkbox" id="broadcast-active" checked style="width: 20px; height: 20px;">
+          <div>
+            <label for="broadcast-active" style="font-weight: 700; cursor: pointer;">تفعيل عرض الإشعار بالتطبيق</label>
+            <p style="font-size: 12px; color: var(--text-muted);">يظهر كبانر تنبيهي في أعلى الشاشة الرئيسية لكل الفنيين عند فتح التطبيق.</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>عنوان الإشعار</label>
+          <input type="text" id="broadcast-title" class="form-control" value="تنبيه فني هام 🔔">
+        </div>
+
+        <div class="form-group">
+          <label>نص الرسالة المنشورة</label>
+          <textarea id="broadcast-msg" class="form-control" rows="3">تم تحديث روابط فحص الآيكلاود وشاومي لتوفير أسرع استجابة للفحص بدون كابتشا.</textarea>
+        </div>
+
+        <button class="btn btn-primary" onclick="saveBroadcast()"><i class="fa-solid fa-paper-plane"></i> إرسال الإشعار لجميع الأجهزة</button>
+      </div>
+    </section>
+
+    <!-- Tab 4: Sections Management -->
+    <section id="tab-sections" class="tab-content">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h3 style="font-size: 18px; font-weight: 700;">إدارة الأقسام الـ 12 بالتطبيق</h3>
+          <button class="btn btn-primary" onclick="addSectionPrompt()"><i class="fa-solid fa-plus"></i> إضافة قسم جديد</button>
+        </div>
+        <table id="sections-table">
+          <thead>
+            <tr>
+              <th>اسم القسم</th>
+              <th>النوع واللون</th>
+              <th>الوصف الفني</th>
+              <th>الحالة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>مقارنة الشاشات</strong></td>
+              <td><span class="badge badge-info">سماوي (#0284C7)</span></td>
+              <td>OLED vs AMOLED vs IPS LCD</td>
+              <td><span class="badge badge-success">مفعل</span></td>
+              <td><button class="btn btn-outline" style="padding: 4px 8px;" onclick="alert('قسم أساسي مؤمن')">تعديل</button></td>
+            </tr>
+            <tr>
+              <td><strong>نقاط التيست بوينت</strong></td>
+              <td><span class="badge badge-info">ذهبي (#D97706)</span></td>
+              <td>Qualcomm 9008, BROM, Kirin</td>
+              <td><span class="badge badge-success">مفعل</span></td>
+              <td><button class="btn btn-outline" style="padding: 4px 8px;" onclick="alert('قسم أساسي مؤمن')">تعديل</button></td>
+            </tr>
+            <tr>
+              <td><strong>تحميل أنظمة الأجهزة</strong></td>
+              <td><span class="badge badge-info">أزرق (#0284C7)</span></td>
+              <td>رومات شاومي، سامسونج، أوبو، تكنو</td>
+              <td><span class="badge badge-success">مفعل</span></td>
+              <td><button class="btn btn-outline" style="padding: 4px 8px;" onclick="alert('قسم أساسي مؤمن')">تعديل</button></td>
+            </tr>
+            <tr>
+              <td><strong>أكواد خيارات المطور</strong></td>
+              <td><span class="badge badge-info">بنفسجي (#7C3AED)</span></td>
+              <td>أكواد فحص وتصحيح USB للأجهزة المقفلة</td>
+              <td><span class="badge badge-success">مفعل</span></td>
+              <td><button class="btn btn-outline" style="padding: 4px 8px;" onclick="alert('قسم أساسي مؤمن')">تعديل</button></td>
+            </tr>
+            <tr>
+              <td><strong>قسم ملفات الدامب</strong></td>
+              <td><span class="badge badge-info">برتقالي (#EA580C)</span></td>
+              <td>تجميعة Google Pixel 2026 ودامبات البوت</td>
+              <td><span class="badge badge-success">مفعل</span></td>
+              <td><button class="btn btn-outline" style="padding: 4px 8px;" onclick="alert('قسم أساسي مؤمن')">تعديل</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Tab 5: Posts & Blog CMS -->
+    <section id="tab-posts" class="tab-content">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div>
+            <h3 style="font-size: 18px; font-weight: 700;">إدارة المنشورات ومقالات المدونة</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">المدونة الرسمية: <a href="https://yaz-blog.blogspot.com/" target="_blank" style="color: var(--primary);">yaz-blog.blogspot.com</a></p>
+          </div>
+          <button class="btn btn-primary" onclick="newPostPrompt()"><i class="fa-solid fa-plus"></i> نشر مقال جديد</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>عنوان المقال</th>
+              <th>التصنيف</th>
+              <th>تاريخ النشر</th>
+              <th>المشاهدات</th>
+              <th>الإجراء</th>
+            </tr>
+          </thead>
+          <tbody id="posts-tbody">
+            <tr>
+              <td><strong>حل مشكلة موت Poco X3 Pro وشبلنة المعالج خطوة بخطوة</strong></td>
+              <td><span class="badge badge-info">هاردوير</span></td>
+              <td>2026-09-26</td>
+              <td>2,450</td>
+              <td><button class="btn btn-danger" style="padding: 4px 8px;" onclick="this.closest('tr').remove()">حذف</button></td>
+            </tr>
+            <tr>
+              <td><strong>طريقة فك وتجاوز حماية حساب شاومي Mi Cloud بدون بوكسات</strong></td>
+              <td><span class="badge badge-info">سوفت وير</span></td>
+              <td>2026-09-24</td>
+              <td>3,890</td>
+              <td><button class="btn btn-danger" style="padding: 4px 8px;" onclick="this.closest('tr').remove()">حذف</button></td>
+            </tr>
+            <tr>
+              <td><strong>أحدث أكواد شفرات التوربو سيم والـ ICCID لفك شبكات الآيفون</strong></td>
+              <td><span class="badge badge-info">شبكات</span></td>
+              <td>2026-09-20</td>
+              <td>5,120</td>
+              <td><button class="btn btn-danger" style="padding: 4px 8px;" onclick="this.closest('tr').remove()">حذف</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Tab 6: AdSense -->
+    <section id="tab-adsense" class="tab-content">
+      <div class="card">
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">إعدادات وتكامل Google AdSense</h3>
+        
+        <div class="form-group">
+          <label>Publisher ID (معرف الناشر)</label>
+          <input type="text" class="form-control" value="pub-4752417544013096" readonly style="background: #F1F5F9; font-weight: bold;">
+        </div>
+
+        <div class="form-group">
+          <label>Customer ID (معرف العميل)</label>
+          <input type="text" class="form-control" value="9947688120" readonly style="background: #F1F5F9; font-weight: bold;">
+        </div>
+
+        <div class="toggle-row">
+          <input type="checkbox" id="ads-toggle" checked style="width: 20px; height: 20px;">
+          <div>
+            <label for="ads-toggle" style="font-weight: 700; cursor: pointer;">تفعيل الإعلانات داخل التطبيق</label>
+            <p style="font-size: 12px; color: var(--text-muted);">يتحكم في إظهار أو إخفاء البانرات الإعلانية في جميع شاشات التطبيق.</p>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="alert('تم حفظ إعدادات AdSense بنجاح')"><i class="fa-solid fa-check"></i> حفظ إعدادات الإعلانات</button>
+      </div>
+    </section>
+
+    <!-- Tab 7: Reports -->
+    <section id="tab-reports" class="tab-content">
+      <div class="card">
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">سجل البلاغات والتقارير الفنية</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>الموديل</th>
+              <th>نوع العطل المبلغ عنه</th>
+              <th>ملاحظات الفني</th>
+              <th>الحالة</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Samsung A52s 5G</td>
+              <td>علامة مثلث أصفر وارتفاع حرارة</td>
+              <td>تم تأكيد عطل ثرمستور البوردة السفلية TH1000</td>
+              <td><span class="badge badge-success">محلول</span></td>
+            </tr>
+            <tr>
+              <td>Redmi Note 11S</td>
+              <td>توقف الصوت بعد التفليش</td>
+              <td>يحتاج إعادة كتابة ملفات NVRAM وتثبيت كيرنل سليم</td>
+              <td><span class="badge badge-info">قيد المراجعة</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+
+      const headings = {
+        'tab-overview': ['نظرة عامة والتقارير', 'إحصائيات تطبيق Phone Traffic وأداء الأقسام والتفاعل'],
+        'tab-updates': ['إدارة الإصدارات والتحديث الإجباري', 'التحكم في قفل التطبيق وطلب التحديث الإجباري والإصدارات'],
+        'tab-broadcast': ['بث الإشعارات المباشرة', 'إرسال تنبيهات عاجلة تظهر لجميع الفنيين أعلى الشاشة الرئيسية'],
+        'tab-sections': ['إدارة الأقسام والخدمات', 'نشر وتعديل وحذف الأقسام والخدمات'],
+        'tab-posts': ['إدارة المنشورات والمدونة', 'كتابة مقالات الصيانة وربطها بالمدونة yaz-blog.blogspot.com'],
+        'tab-adsense': ['إعلانات Google AdSense', 'التحكم في حساب أدسنس ومعرف الناشر ومرات الظهور'],
+        'tab-reports': ['سجل البلاغات والتقارير', 'متابعة تقارير الأعطال والتواصل مع الفنيين']
+      };
+
+      if (headings[tabId]) {
+        document.getElementById('page-heading').innerText = headings[tabId][0];
+        document.getElementById('page-subheading').innerText = headings[tabId][1];
+      }
+      event.currentTarget.classList.add('active');
+    }
+
+    function syncToServer() {
+      saveUpdates();
+      saveBroadcast();
+      alert('تمت مزامنة كافة التغييرات وحفظها بنجاح مع سيرفر Vercel!');
+    }
+
+    function saveUpdates() {
+      const data = {
+        latestVersionCode: parseInt(document.getElementById('update-version-code').value),
+        latestVersionName: document.getElementById('update-version-name').value,
+        isMandatory: document.getElementById('update-mandatory').checked,
+        updateTitle: document.getElementById('update-title').value,
+        updateMessage: document.getElementById('update-msg').value,
+        downloadUrl: document.getElementById('update-url').value
+      };
+      fetch('/api/app-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(() => alert('تم نشر إعدادات التحديث بنجاح!'));
+    }
+
+    function saveBroadcast() {
+      const data = {
+        broadcastTitle: document.getElementById('broadcast-title').value,
+        broadcastMessage: document.getElementById('broadcast-msg').value,
+        isBroadcastActive: document.getElementById('broadcast-active').checked
+      };
+      fetch('/api/app-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    }
+
+    function newPostPrompt() {
+      const title = prompt('أدخل عنوان المقال أو المنشور الجديد:');
+      if (title) {
+        const tbody = document.getElementById('posts-tbody');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><strong>${title}</strong></td><td><span class="badge badge-info">عام</span></td><td>2026-09-26</td><td>0</td><td><button class="btn btn-danger" style="padding: 4px 8px;" onclick="this.closest('tr').remove()">حذف</button></td>`;
+        tbody.prepend(tr);
+        alert('تم نشر المقال بنجاح!');
+      }
+    }
+
+    function addSectionPrompt() {
+      const name = prompt('أدخل اسم القسم الجديد:');
+      if (name) {
+        alert('تمت إضافة القسم: ' + name);
+      }
+    }
+  </script>
+</body>
+</html>

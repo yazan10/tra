@@ -1,0 +1,9 @@
+{
+  "name": "phone-traffic-admin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Phone Traffic Admin Dashboard and API for technician app updates",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

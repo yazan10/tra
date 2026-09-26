@@ -1,0 +1,6 @@
+{
+  "name": "Phone Traffic",
+  "description": "دليل وأداة فنيي صيانة الهواتف: مقارنة الشاشات والأجهزة، نقاط التيست بوينت، توافقات الشاشات، دورات السوفت وير، وفحص IMEI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
