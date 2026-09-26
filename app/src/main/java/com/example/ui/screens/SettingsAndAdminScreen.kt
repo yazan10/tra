@@ -22,6 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.AppUpdateConfig
+import com.example.network.AppAds
+import com.example.network.RewardedManager
 import com.example.network.VercelUpdateManager
 import com.example.ui.components.AdBannerPlaceholder
 import com.example.ui.theme.PrimaryBlue
@@ -150,6 +152,79 @@ fun SettingsAndAdminScreen(
                                     fontWeight = FontWeight.SemiBold
                                 )
                             )
+                        }
+                    }
+                }
+            }
+
+            // Support Card: watch rewarded ad = hide banners for 1 hour
+            item {
+                var rewardMsg by remember { mutableStateOf<String?>(null) }
+                val rewardActive = AppAds.isRewardActive()
+                Card(
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFBEB)),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF59E0B)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.VolunteerActivism,
+                                contentDescription = null,
+                                tint = Color(0xFFB45309),
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "ادعم التطبيق مجاناً",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = if (rewardActive) "البانرات مخفية الآن — شكراً لدعمك! 🎉" else "شاهد إعلاناً قصيراً وستختفي كل بانرات الإعلانات لمدة ساعة كاملة.",
+                            style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
+                        )
+                        if (rewardMsg != null) {
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = rewardMsg!!,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    color = StatusSuccess,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Button(
+                            onClick = {
+                                val activity = context as? android.app.Activity
+                                if (activity == null) return@Button
+                                RewardedManager.preload(activity)
+                                RewardedManager.show(
+                                    activity = activity,
+                                    onRewarded = {
+                                        AppAds.grantNoAdsReward()
+                                        rewardMsg = "تم! البانرات مخفية لمدة ساعة ✅"
+                                    },
+                                    onClosed = {
+                                        if (!AppAds.isRewardActive()) {
+                                            rewardMsg = "شاهد الإعلان كاملاً للحصول على المكافأة"
+                                        }
+                                    }
+                                )
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB45309))
+                        ) {
+                            Icon(Icons.Default.PlayCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("مشاهدة إعلان الدعم")
                         }
                     }
                 }

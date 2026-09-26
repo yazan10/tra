@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -104,16 +105,17 @@ class VercelUpdateManager(private val context: Context) {
                             blogUrl = blogUrl
                         )
                         _lastCheckResult.value = "تمت المزامنة بنجاح مع استضافة Vercel"
-                        onComplete?.invoke(true)
+                        // الرد على الخيط الرئيسي (Toast والواجهة تنهار على خيط الخلفية)
+                        withContext(Dispatchers.Main) { onComplete?.invoke(true) }
                         return@launch
                     }
                 }
                 _lastCheckResult.value = "استجابة السيرفر غير مطابقة، تم استخدام الإعدادات الاحتياطية."
-                onComplete?.invoke(false)
+                withContext(Dispatchers.Main) { onComplete?.invoke(false) }
             } catch (e: Exception) {
                 // Keep local safe state
                 _lastCheckResult.value = "تعذر الاتصال بسيرفر Vercel (${e.message ?: "شبكة"})"
-                onComplete?.invoke(false)
+                withContext(Dispatchers.Main) { onComplete?.invoke(false) }
             } finally {
                 _isChecking.value = false
             }

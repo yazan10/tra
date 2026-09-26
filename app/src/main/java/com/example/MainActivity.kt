@@ -14,6 +14,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.example.model.AppUpdateConfig
+import com.example.network.AppOpenManager
+import com.example.network.FlashRewardManager
+import com.example.network.InterstitialManager
+import com.example.network.NativeAdManager
+import com.example.network.RewardedManager
 import com.example.network.VercelUpdateManager
 import com.example.ui.components.ForceUpdateScreen
 import com.example.ui.components.MandatoryUpdateDialog
@@ -21,6 +26,7 @@ import com.example.ui.components.SplashScreen
 import com.example.ui.screens.*
 import com.example.ui.theme.BackgroundLight
 import com.example.ui.theme.PhoneTrafficTheme
+import com.google.android.gms.ads.MobileAds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -31,6 +37,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         updateManager = VercelUpdateManager(applicationContext)
+        // تهيئة إعلانات AdMob (عرض حقيقي داخل التطبيق)
+        MobileAds.initialize(this) {}
+        // تحميل مسبق: بيني + فتح التطبيق + مكافأة + نيتف + بوابة الفلاش
+        InterstitialManager.preload(this)
+        AppOpenManager.preload(this)
+        RewardedManager.preload(this)
+        FlashRewardManager.preload(this)
+        NativeAdManager.preload(this, "posts")
+        NativeAdManager.preload(this, "flash")
         enableEdgeToEdge()
 
         setContent {
@@ -43,6 +58,7 @@ class MainActivity : ComponentActivity() {
                 var showOptionalUpdateDialog by remember { mutableStateOf(false) }
                 var minTimePassed by remember { mutableStateOf(false) }
                 var checkDone by remember { mutableStateOf(false) }
+                var appOpenShown by remember { mutableStateOf(false) }
                 val isChecking by updateManager.isChecking.collectAsState()
 
                 // شاشة تحميل: أقل مدة 1.5 ثانية + انتظار نتيجة فحص السيرفر
@@ -85,6 +101,21 @@ class MainActivity : ComponentActivity() {
                     return@PhoneTrafficTheme
                 }
 
+                // إعلان فتح التطبيق مرة واحدة بعد التحميل (إذا لا يوجد حظر)
+                LaunchedEffect(isLoading) {
+                    if (!isLoading && !appOpenShown) {
+                        appOpenShown = true
+                        AppOpenManager.showIfReady(this@MainActivity)
+                    }
+                }
+
+                // تنقل بين الأقسام مع إعلان بيني (بفاصل 90 ثانية)
+                val goToCategory: (String) -> Unit = { categoryId ->
+                    InterstitialManager.showIfReady(this@MainActivity) {
+                        currentScreen = categoryId
+                    }
+                }
+
                 // Check if mandatory update dialog is triggered
                 val showMandatoryDialog = config.isMandatory && hasUpdate
                 val showUpdateAlert = showMandatoryDialog || (showOptionalUpdateDialog && hasUpdate)
@@ -114,7 +145,7 @@ class MainActivity : ComponentActivity() {
                             config = config,
                             updateManager = updateManager,
                             onNavigateToCategory = { categoryId ->
-                                currentScreen = categoryId
+                                goToCategory(categoryId)
                             },
                             onNavigateToSettings = {
                                 currentScreen = "settings"
@@ -215,7 +246,7 @@ class MainActivity : ComponentActivity() {
                         else -> HomeScreen(
                             config = config,
                             updateManager = updateManager,
-                            onNavigateToCategory = { currentScreen = it },
+                            onNavigateToCategory = { goToCategory(it) },
                             onNavigateToSettings = { currentScreen = "settings" },
                             onOpenUrlInApp = { url, title ->
                                 activeBrowserUrl = url

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.TechnicianDataProvider
 import com.example.ui.components.AdBannerPlaceholder
+import com.example.ui.components.RewardGate
 import com.example.ui.components.SectionFilterStrip
 import com.example.ui.theme.ColorCategoryRoms
 import com.example.ui.theme.PrimaryBlue
@@ -30,6 +31,12 @@ fun RomDownloadScreen(
     onOpenUrlInApp: (url: String, title: String) -> Unit
 ) {
     BackHandler { onBack() }
+    // بوابة المكافأة: مشاهدة كاملة في كل دخول
+    RewardGate(
+        sectionName = "تحميل الرومات",
+        accentColor = ColorCategoryRoms,
+        onBack = onBack
+    ) {
 
     val sites = TechnicianDataProvider.romDownloadSites
     var searchQuery by remember { mutableStateOf("") }
@@ -234,4 +241,6 @@ fun RomDownloadScreen(
             }
         }
     }
+}
+
 }

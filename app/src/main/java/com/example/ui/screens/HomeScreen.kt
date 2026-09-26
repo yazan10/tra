@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -42,6 +43,7 @@ import com.example.model.AppUpdateConfig
 import com.example.network.VercelUpdateManager
 import com.example.ui.components.AdBannerPlaceholder
 import com.example.ui.components.GlassmorphicBottomBar
+import com.example.ui.components.NativeAdCard
 import com.example.ui.components.TechnicianDrawerSheet
 import com.example.ui.theme.*
 import kotlinx.coroutines.launch
@@ -827,7 +829,7 @@ fun HomeScreen(
                         }
 
                         // Posts List
-                        items(filteredPosts, key = { it.id }) { post ->
+                        itemsIndexed(filteredPosts, key = { _, it -> it.id }) { index, post ->
                             Card(
                                 shape = RoundedCornerShape(14.dp),
                                 colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -921,6 +923,11 @@ fun HomeScreen(
                                         )
                                     }
                                 }
+                            }
+                            // إعلان Native بعد ثاني منشور — ترتيب ثابت لأي منشورات مستقبلية
+                            if (index == 1) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                NativeAdCard()
                             }
                         }
 

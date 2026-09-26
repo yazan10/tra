@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.TechnicianDataProvider
 import com.example.ui.components.AdBannerPlaceholder
+import com.example.ui.components.RewardGate
 import com.example.ui.components.SectionFilterStrip
 import com.example.ui.theme.ColorCategoryDumps
 import com.example.ui.theme.PrimaryBlue
@@ -33,6 +34,12 @@ fun DumpCollectionScreen(
     onBack: () -> Unit
 ) {
     BackHandler { onBack() }
+    // بوابة المكافأة: مشاهدة كاملة في كل دخول
+    RewardGate(
+        sectionName = "ملفات الدامب",
+        accentColor = ColorCategoryDumps,
+        onBack = onBack
+    ) {
     val context = LocalContext.current
     val dumps = TechnicianDataProvider.dumpCollection
     var searchQuery by remember { mutableStateOf("") }
@@ -254,4 +261,6 @@ fun DumpCollectionScreen(
             }
         }
     }
+}
+
 }

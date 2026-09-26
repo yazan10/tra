@@ -20,6 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.example.ui.components.AdBannerPlaceholder
+import com.example.ui.components.NativeAdCard
+import com.example.ui.components.RewardGate
 import com.example.ui.components.SectionFilterStrip
 import com.example.ui.theme.ColorCategoryFlash
 import java.io.File
@@ -33,6 +35,12 @@ fun FlashScreen(
     onBack: () -> Unit
 ) {
     BackHandler { onBack() }
+    // بوابة المكافأة: مشاهدة كاملة في كل دخول
+    RewardGate(
+        sectionName = "قسم فلاش YAZ",
+        accentColor = ColorCategoryFlash,
+        onBack = onBack
+    ) {
     val context = LocalContext.current
     var searchQuery by remember { mutableStateOf("") }
     var selectedSection by remember { mutableStateOf("Odin") }
@@ -193,6 +201,11 @@ fun FlashScreen(
             // Inline Ad Placement (AdSense)
             item {
                 AdBannerPlaceholder(adSlotName = "إعلان - قسم فلاش YAZ")
+            }
+
+            // إعلان Native مدمج بتصميم القسم
+            item {
+                NativeAdCard(slot = "flash")
             }
 
             if (showOdin) {
@@ -358,4 +371,6 @@ fun FlashScreen(
             }
         }
     }
+}
+
 }

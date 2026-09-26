@@ -4,9 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,13 +16,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.network.AppAds
 import com.example.ui.theme.PrimaryBlue
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 
 /**
- * Standard AdSense / AdMob banner placeholder compliant with Google Play Ad Policies.
- * Clearly labeled and integrated into each section of the app.
- * يظهر/يختفي لحظياً حسب إعدادات AdSense في لوحة الأدمن (pub-4752417544013096).
+ * بانر إعلاني حقيقي (AdMob) داخل التطبيق — يظهر/يختفي لحظياً حسب
+ * إعدادات AdSense في لوحة الأدمن (pub-4752417544013096).
+ * ملاحظة: المعرفات حالياً تجريبية من جوجل (إعلانات اختبار)،
+ * استبدلها بمعرفات AdMob الحقيقية من AppAds.kt لعرض إعلانات مدفوعة.
  */
 @Composable
 fun AdBannerPlaceholder(
@@ -33,54 +35,40 @@ fun AdBannerPlaceholder(
     adSlotName: String = "مساحة إعلانية - AdSense / AdMob"
 ) {
     val adsEnabled by AppAds.adsEnabled.collectAsState()
+    val hiddenUntil by AppAds.bannersHiddenUntil.collectAsState()
     if (!adsEnabled) return
-    Box(
+    if (System.currentTimeMillis() < hiddenUntil) return
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .height(56.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFFF1F5F9))
-            .border(1.dp, Color(0xFFCBD5E1), RoundedCornerShape(8.dp)),
-        contentAlignment = Alignment.Center
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(horizontal = 12.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(PrimaryBlue.copy(alpha = 0.15f))
-                    .padding(horizontal = 6.dp, vertical = 2.dp)
-            ) {
-                Text(
-                    text = "إعلان / AD",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = PrimaryBlue,
-                        fontSize = 10.sp
-                    )
-                )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Icon(
-                imageVector = Icons.Default.Info,
-                contentDescription = null,
-                tint = Color.Black,
-                modifier = Modifier.size(16.dp)
+        Text(
+            text = "إعلان",
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontWeight = FontWeight.Bold,
+                color = PrimaryBlue,
+                fontSize = 10.sp
             )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                text = adSlotName,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = Color.Black,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            )
-        }
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        AndroidView(
+            factory = { ctx ->
+                AdView(ctx).apply {
+                    setAdSize(AdSize.BANNER)
+                    // توزيع الوحدات الثلاث على المواضع تلقائياً
+                    adUnitId = AppAds.bannerUnitFor(adSlotName)
+                    loadAd(AdRequest.Builder().build())
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color(0xFFF1F5F9))
+                .border(1.dp, Color(0xFFCBD5E1), RoundedCornerShape(8.dp))
+        )
     }
 }

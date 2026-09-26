@@ -35,6 +35,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <!-- AdMob: عرض الإعلانات الحقيقية داخل التطبيق (Phone Traffic) -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4752417544013096~8334248524" />
     </application>
 
 </manifest>
