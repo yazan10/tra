@@ -1,0 +1,24 @@
+{
+  "config": {
+    "currentVersionCode": 1,
+    "latestVersionCode": 1,
+    "latestVersionName": "1.0.0",
+    "isMandatory": false,
+    "updateTitle": "تحديث جديد متوفر لتطبيق فون ترافيك",
+    "updateMessage": "تمت إضافة توافقات شاشات وأكواد صيانة جديدة وتحديث روابط الفحص لعام 2026.",
+    "downloadUrl": "https://t.me/Yazunlo",
+    "broadcastTitle": "تخزين دائم 03:36 ✅",
+    "broadcastMessage": "محفوظة نهائياً",
+    "isBroadcastActive": true,
+    "blogUrl": "https://yaz-blog.blogspot.com/",
+    "isMaintenanceMode": false,
+    "maintenanceTitle": "سنعود قريباً 🛠️",
+    "maintenanceMessage": "نقوم حالياً بأعمال الصيانة والتطوير — سيتم إبلاغكم بكل جديد عبر الإشعارات.",
+    "adsense": {
+      "publisherId": "pub-4752417544013096",
+      "customerId": "9947688120",
+      "adsEnabled": true
+    }
+  },
+  "_updatedAt": "2026-09-27T00:36:19.224Z"
+}
