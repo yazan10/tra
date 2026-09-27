@@ -1,5 +1,7 @@
-// Vercel Serverless: /api/sections — إدارة أقسام التطبيق (نشر/حذف/تعديل)
-let sections = [
+// /api/sections — persistent via GitHub data-store.json
+const { loadDoc, saveDoc } = require("./_store");
+
+const DEFAULTS = [
   { id: "screens", name: "مقارنة الشاشات", icon: "fa-display", color: "#0284C7", desc: "OLED vs AMOLED vs IPS LCD", active: true },
   { id: "devices", name: "مقارنة الأجهزة", icon: "fa-mobile-screen", color: "#0284C7", desc: "مقارنة المعالجات والبطاريات", active: true },
   { id: "test_points", name: "نقاط التيست بوينت", icon: "fa-microchip", color: "#D97706", desc: "Qualcomm 9008, BROM, Kirin", active: true },
@@ -14,18 +16,23 @@ let sections = [
   { id: "dump_collection", name: "ملفات الدامب", icon: "fa-database", color: "#EA580C", desc: "دامبات البوت وتجميعة Pixel 2026", active: true }
 ];
 
-module.exports = (req, res) => {
+const requireAdmin = (req) => req.headers["x-admin-password"] === "aylool@#5";
+
+module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-password");
   if (req.method === "OPTIONS") return res.status(200).end();
   const body = () => { try { return typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {}); } catch { return {}; } };
-  const requireAdmin = () => req.headers["x-admin-password"] === "aylool@#5";
+
+  const doc = (await loadDoc()) || {};
+  let sections = Array.isArray(doc.sections) ? doc.sections : DEFAULTS.map(s => ({ ...s }));
 
   if (req.method === "GET") return res.status(200).json({ sections, count: sections.length });
 
+  if (!requireAdmin(req)) return res.status(401).json({ error: "Unauthorized" });
+
   if (req.method === "POST" || req.method === "PUT") {
-    if (!requireAdmin()) return res.status(401).json({ error: "Unauthorized" });
     const b = body();
     if (!b.name) return res.status(400).json({ error: "name required" });
     if (b.id) {
@@ -35,14 +42,15 @@ module.exports = (req, res) => {
     } else {
       sections.push({ id: "sec_" + Date.now(), icon: "fa-cube", color: "#1565C0", desc: "", active: true, ...b });
     }
-    return res.status(200).json({ success: true, sections });
+    const saved = await saveDoc({ ...doc, sections });
+    return res.status(200).json({ success: true, sections, persisted: saved.ok });
   }
   if (req.method === "DELETE") {
-    if (!requireAdmin()) return res.status(401).json({ error: "Unauthorized" });
     const b = body();
     const id = b.id || req.query.id;
     sections = sections.filter(s => s.id !== id);
-    return res.status(200).json({ success: true, sections });
+    const saved = await saveDoc({ ...doc, sections });
+    return res.status(200).json({ success: true, sections, persisted: saved.ok });
   }
   return res.status(405).json({ error: "Method not allowed" });
 };
