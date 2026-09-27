@@ -252,6 +252,7 @@
     #tab-posts .card { border-top: 3px solid #16A34A; }
     #tab-adsense .card { border-top: 3px solid #EA580C; }
     #tab-reports .card { border-top: 3px solid #64748B; }
+    #tab-maintenance .card { border-top: 3px solid #DC2626; }
     /* ===== بوابة الدخول ===== */
     .login-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.75); backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
     .login-overlay.hidden { display: none; }
@@ -304,6 +305,9 @@
       </div>
       <div class="nav-item" onclick="switchTab('tab-reports')">
         <i class="fa-solid fa-bug"></i> تقارير وأعطال الفنيين
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-maintenance')">
+        <i class="fa-solid fa-screwdriver-wrench"></i> وضع الصيانة
       </div>
     </nav>
     <div style="padding: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted);">
@@ -451,26 +455,6 @@
         </div>
 
         <button class="btn btn-primary" onclick="saveUpdates()"><i class="fa-solid fa-save"></i> حفظ ونشر التحديث فوراً</button>
-      </div>
-      <div class="card">
-        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">وضع الصيانة (إيقاف التطبيق مؤقتاً)</h3>
-        <div class="toggle-row">
-          <input type="checkbox" id="maint-active" style="width: 20px; height: 20px;">
-          <div>
-            <label for="maint-active" style="font-weight: 700; cursor: pointer;">تفعيل وضع الصيانة</label>
-            <p style="font-size: 12px; color: var(--text-muted);">عند التفعيل يظهر للمستخدمين "سنعود قريباً" فقط مع تنبيههم عبر الإشعارات — ولا يمكن استخدام التطبيق حتى الإيقاف.</p>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>عنوان شاشة الصيانة</label>
-          <input type="text" id="maint-title" class="form-control" value="سنعود قريباً 🛠️">
-        </div>
-        <div class="form-group">
-          <label>رسالة الصيانة</label>
-          <textarea id="maint-msg" class="form-control" rows="2">نقوم حالياً بأعمال الصيانة والتطوير — سيتم إبلاغكم بكل جديد عبر الإشعارات.</textarea>
-        </div>
-        <button class="btn btn-primary" onclick="saveMaintenance()"><i class="fa-solid fa-screwdriver-wrench"></i> حفظ وضع الصيانة</button>
-        <span id="maint-status" style="font-size:12px;color:var(--text-muted);margin-right:10px;"></span>
       </div>
     </section>
 
@@ -671,6 +655,36 @@
         </table>
       </div>
     </section>
+
+    <!-- Tab 8: Maintenance Mode -->
+    <section id="tab-maintenance" class="tab-content">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h3 style="font-size: 18px; font-weight: 700;">وضع الصيانة (إيقاف التطبيق مؤقتاً)</h3>
+          <span id="maint-live-badge" class="badge badge-success">التطبيق يعمل</span>
+        </div>
+        <div class="toggle-row">
+          <input type="checkbox" id="maint-active" style="width: 20px; height: 20px;" onchange="updateMaintBadge()">
+          <div>
+            <label for="maint-active" style="font-weight: 700; cursor: pointer;">تفعيل وضع الصيانة</label>
+            <p style="font-size: 12px; color: var(--text-muted);">عند التفعيل يظهر للمستخدمين "سنعود قريباً" فقط مع تنبيههم عبر الإشعارات — ولا يمكن استخدام التطبيق حتى الإيقاف.</p>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>عنوان شاشة الصيانة</label>
+          <input type="text" id="maint-title" class="form-control" value="سنعود قريباً 🛠️">
+        </div>
+        <div class="form-group">
+          <label>رسالة الصيانة</label>
+          <textarea id="maint-msg" class="form-control" rows="2">نقوم حالياً بأعمال الصيانة والتطوير — سيتم إبلاغكم بكل جديد عبر الإشعارات.</textarea>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="btn btn-primary" onclick="saveMaintenance()"><i class="fa-solid fa-screwdriver-wrench"></i> حفظ وضع الصيانة</button>
+          <button class="btn btn-outline" onclick="stopMaintenance()"><i class="fa-solid fa-play"></i> إيقاف الصيانة وتشغيل التطبيق</button>
+          <span id="maint-status" style="font-size:12px;color:var(--text-muted);"></span>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- ===== شريط سفلي زجاجي عائم بحواف منحنية ===== -->
@@ -739,7 +753,7 @@
       document.querySelectorAll('.glass-btn').forEach(b => b.classList.remove('active'));
       if (btn) btn.classList.add('active');
       const navItems = document.querySelectorAll('.nav-item');
-      const map = {'tab-overview':0,'tab-updates':1,'tab-broadcast':2,'tab-sections':3,'tab-posts':4,'tab-adsense':5,'tab-reports':6};
+      const map = {'tab-overview':0,'tab-updates':1,'tab-broadcast':2,'tab-sections':3,'tab-posts':4,'tab-adsense':5,'tab-reports':6,'tab-maintenance':7};
       switchTab(tabId, navItems[map[tabId]]);
       window.scrollTo({top:0, behavior:'smooth'});
     }
@@ -793,7 +807,8 @@
         'tab-sections': ['إدارة الأقسام والخدمات', 'نشر وتعديل وحذف الأقسام والخدمات'],
         'tab-posts': ['إدارة المنشورات والمدونة', 'كتابة مقالات الصيانة وربطها بالمدونة yaz-blog.blogspot.com'],
         'tab-adsense': ['إعلانات AdMob للتطبيق', 'وحدات البانر والبيني والنيتف والمكافأة ومواضعها'],
-        'tab-reports': ['سجل البلاغات والتقارير', 'متابعة تقارير الأعطال والتواصل مع الفنيين']
+        'tab-reports': ['سجل البلاغات والتقارير', 'متابعة تقارير الأعطال والتواصل مع الفنيين'],
+        'tab-maintenance': ['وضع الصيانة', 'إيقاف التطبيق مؤقتاً وعرض شاشة سنعود قريباً'],
       };
 
       if (headings[tabId]) {
@@ -845,6 +860,7 @@
         document.getElementById('maint-active').checked = !!c.isMaintenanceMode;
         if (c.maintenanceTitle) document.getElementById('maint-title').value = c.maintenanceTitle;
         if (c.maintenanceMessage) document.getElementById('maint-msg').value = c.maintenanceMessage;
+        updateMaintBadge();
         if (c.adsense) document.getElementById('ads-toggle').checked = !!c.adsense.adsEnabled;
       } catch(e) {}
     }
@@ -868,9 +884,20 @@
         maintenanceMessage: document.getElementById('maint-msg').value
       };
       await api('/api/app-config', 'POST', data);
+      updateMaintBadge();
       document.getElementById('maint-status').innerText =
         data.isMaintenanceMode ? 'وضع الصيانة مفعّل — التطبيق متوقف الآن ⛔' : 'تم إيقاف الصيانة — التطبيق يعمل ✓';
       setTimeout(() => document.getElementById('maint-status').innerText = '', 4000);
+    }
+    async function stopMaintenance() {
+      document.getElementById('maint-active').checked = false;
+      await saveMaintenance();
+    }
+    function updateMaintBadge() {
+      const on = document.getElementById('maint-active').checked;
+      const b = document.getElementById('maint-live-badge');
+      b.className = 'badge ' + (on ? 'badge-danger' : 'badge-success');
+      b.innerText = on ? 'صيانة مفعّلة ⛔' : 'التطبيق يعمل';
     }
     async function saveBroadcast(silent) {
       const data = {
