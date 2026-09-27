@@ -231,7 +231,13 @@ class MainActivity : ComponentActivity() {
                         )
 
                         "software" -> SoftwareCoursesScreen(
-                            onBack = { currentScreen = "home" }
+                            onBack = { currentScreen = "home" },
+                            onOpenUrlInApp = { url, title ->
+                                activeBrowserUrl = url
+                                activeBrowserTitle = title
+                                previousScreenBeforeBrowser = "software"
+                                currentScreen = "in_app_browser"
+                            }
                         )
 
                         "screen_compat" -> ScreenCompatibilityScreen(

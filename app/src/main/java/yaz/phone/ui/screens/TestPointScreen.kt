@@ -1,6 +1,8 @@
 package yaz.phone.ui.screens
 
 import androidx.activity.compose.BackHandler
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -18,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,6 +36,7 @@ fun TestPointScreen(
     onBack: () -> Unit
 ) {
     BackHandler { onBack() }
+    val context = LocalContext.current
 
     val allPoints = TechnicianDataProvider.testPoints
     var selectedBrand by remember { mutableStateOf(DeviceBrand.XIAOMI) }
@@ -287,6 +291,105 @@ fun TestPointScreen(
             }
 
             // Items
+            // عرض حصري: 450+ مخطط لوحات إلكترونية (بديل الاشتراكات الشهرية)
+            item {
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(18.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(46.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0xFFFBBF24)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Memory,
+                                    contentDescription = null,
+                                    tint = Color(0xFF0F172A),
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "450+ مخطط لوحات إلكترونية 📋",
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                )
+                                Text(
+                                    text = "بالشراكة مع Team Repair",
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        color = Color(0xFFFBBF24),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                            }
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = Color(0xFF16A34A)
+                            ) {
+                                Text(
+                                    text = "3.28$ فقط",
+                                    style = MaterialTheme.typography.titleSmall.copy(
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "بدل اشتراكات البرامج الصينية (36$ و50$ حتى 100$ شهرياً): مكتبة شاملة لجميع الموبايلات — آيفون من 5S حتى 12 Pro Max مع تدقيقات مميزة وتفاصيل مرتبة.",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = Color.White.copy(alpha = 0.9f),
+                                lineHeight = 20.sp
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "الحجم: 7GB • الدفع: Visa و PayPal",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(14.dp))
+                        Button(
+                            onClick = {
+                                try {
+                                    context.startActivity(
+                                        Intent(
+                                            Intent.ACTION_VIEW,
+                                            Uri.parse("https://yazsalaq.gumroad.com/l/oiwzr")
+                                        )
+                                    )
+                                } catch (_: Exception) { }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFFBBF24),
+                                contentColor = Color(0xFF0F172A)
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Icon(Icons.Default.ShoppingCart, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("التفاصيل والشراء الآن", fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+
             // Inline Ad Placement (AdSense)
             item {
                 AdBannerPlaceholder(adSlotName = "إعلان - نقاط التيست بوينت")

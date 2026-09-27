@@ -1,6 +1,8 @@
 package yaz.phone.ui.screens
 
 import androidx.activity.compose.BackHandler
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,11 +33,16 @@ import yaz.phone.ui.theme.PrimaryBlue
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SoftwareCoursesScreen(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onOpenUrlInApp: (url: String, title: String) -> Unit
 ) {
     BackHandler { onBack() }
+    val context = LocalContext.current
 
     val courses = TechnicianDataProvider.softwareCourses
+    // موقع يودمي (يفتح في متصفح الجهاز) — يُفعَّل عند الإطلاق
+    val UDEMY_URL = "https://www.udemy.com"
+    val UDEMY_LAUNCHED = false
     var expandedId by remember { mutableStateOf<String?>(courses.firstOrNull()?.id) }
     var searchQuery by remember { mutableStateOf("") }
     var selectedSection by remember { mutableStateOf("مبتدئ") }
@@ -151,6 +159,127 @@ fun SoftwareCoursesScreen(
             // Inline Ad Placement (AdSense)
             item {
                 AdBannerPlaceholder(adSlotName = "إعلان - دورات السوفت وير")
+            }
+
+            // دورات تعليمنا — تفتح داخل التطبيق
+            item {
+                Card(
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = ColorCategorySoftware),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.School,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(36.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "دورات تعليمنا",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            )
+                            Text(
+                                text = "منصة الدورات التعليمية — تصفح مباشر",
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.White.copy(alpha = 0.85f))
+                            )
+                        }
+                        Button(
+                            onClick = { onOpenUrlInApp("https://talemna.vercel.app/", "دورات تعليمنا") },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = ColorCategorySoftware
+                            ),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text("فتح", fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+
+            // دورة يودمي — قريباً (ستفتح في متصفح الجهاز عند الإطلاق)
+            item {
+                Card(
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayCircle,
+                            contentDescription = null,
+                            tint = Color.Black.copy(alpha = 0.4f),
+                            modifier = Modifier.size(36.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "دورة يودمي",
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.Black
+                                    )
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Surface(
+                                    shape = RoundedCornerShape(6.dp),
+                                    color = Color(0xFFFEF3C7)
+                                ) {
+                                    Text(
+                                        text = "قريباً",
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            color = Color(0xFFB45309),
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                    )
+                                }
+                            }
+                            Text(
+                                text = "سيتم الإطلاق قريباً — ستفتح في متصفح جهازك",
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
+                            )
+                        }
+                        Button(
+                            onClick = {
+                                // يُفعَّل عند الإطلاق: فتح موقع يودمي في متصفح الجهاز
+                                if (UDEMY_LAUNCHED) {
+                                    try {
+                                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(UDEMY_URL)))
+                                    } catch (_: Exception) { }
+                                }
+                            },
+                            enabled = UDEMY_LAUNCHED,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = ColorCategorySoftware,
+                                contentColor = Color.White,
+                                disabledContainerColor = Color(0xFFE2E8F0),
+                                disabledContentColor = Color.Black.copy(alpha = 0.4f)
+                            ),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text("قريباً", fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
             }
 
             items(filteredCourses, key = { it.id }) { course ->
