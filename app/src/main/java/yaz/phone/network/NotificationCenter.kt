@@ -48,7 +48,7 @@ object NotificationStore {
  * إشعارات النظام (تظهر على التلفون حتى والتطبيق مغلق بعد استلامها).
  */
 object AppNotifications {
-    const val CHANNEL_ID = "phone_traffic_channel"
+    const val CHANNEL_ID = "phone_traffic_urgent"
     private const val CHANNEL_NAME = "تحديثات فون ترافيك"
 
     fun hasPermission(context: Context): Boolean {
@@ -62,8 +62,12 @@ object AppNotifications {
         if (Build.VERSION.SDK_INT >= 26) {
             val channel = NotificationChannel(
                 CHANNEL_ID, CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply { description = "تنبيهات المنشورات والتحديثات والبث المباشر" }
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "تنبيهات المنشورات والتحديثات والبث المباشر"
+                enableVibration(true)
+                vibrationPattern = longArrayOf(0, 300, 200, 300)
+            }
             context.getSystemService(NotificationManager::class.java)
                 ?.createNotificationChannel(channel)
         }
@@ -80,11 +84,18 @@ object AppNotifications {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val notif = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(yaz.phone.R.drawable.ic_stat_notification)
+            .setLargeIcon(
+                android.graphics.BitmapFactory.decodeResource(
+                    context.resources, yaz.phone.R.mipmap.ic_launcher
+                )
+            )
+            .setColor(0xFF1565C0.toInt())
             .setContentTitle(title)
             .setContentText(message)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setContentIntent(pending)
             .setAutoCancel(true)
             .build()

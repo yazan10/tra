@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import yaz.phone.model.AppUpdateConfig
 import yaz.phone.network.AppAds
+import yaz.phone.network.AppNotifications
+import yaz.phone.network.NotificationStore
 import yaz.phone.network.RewardedManager
 import yaz.phone.network.VercelUpdateManager
 import yaz.phone.ui.components.AdBannerPlaceholder
@@ -151,6 +153,110 @@ fun SettingsAndAdminScreen(
                                     color = StatusSuccess,
                                     fontWeight = FontWeight.SemiBold
                                 )
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Notifications Card: permission state + instant test
+            item {
+                val notifOk = remember { AppNotifications.hasPermission(context) }
+                val powerManager = remember {
+                    context.getSystemService(android.content.Context.POWER_SERVICE) as android.os.PowerManager
+                }
+                var batteryOk by remember {
+                    mutableStateOf(powerManager.isIgnoringBatteryOptimizations(context.packageName))
+                }
+                Card(
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.NotificationsActive,
+                                contentDescription = null,
+                                tint = PrimaryBlue,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "إشعارات الهاتف",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF0F172A)
+                                )
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = if (notifOk) "الإذن مفعّل ✓ — ستصلك تنبيهات البث والتحديثات على شريط الهاتف."
+                            else "الإذن مطفأ — فعّله ليصلك كل جديد على شريط الإشعارات.",
+                            style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Button(
+                            onClick = {
+                                AppNotifications.ensureChannel(context)
+                                AppNotifications.show(
+                                    context,
+                                    "اختبار إشعارات فون ترافيك 🔔",
+                                    "ممتاز! الإشعارات تعمل — أي بث أو تحديث جديد سيصلك هنا فوراً."
+                                )
+                                NotificationStore.push(
+                                    "اختبار إشعارات فون ترافيك 🔔",
+                                    "ممتاز! الإشعارات تعمل — أي بث أو تحديث جديد سيصلك هنا فوراً."
+                                )
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+                        ) {
+                            Icon(Icons.Default.Notifications, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("إرسال إشعار تجريبي الآن")
+                        }
+                        if (!notifOk) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedButton(
+                                onClick = {
+                                    try {
+                                        context.startActivity(
+                                            Intent(
+                                                android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                                Uri.parse("package:" + context.packageName)
+                                            )
+                                        )
+                                    } catch (_: Exception) { }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text("فتح إعدادات التطبيق لتفعيل الإذن", color = Color.Black)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedButton(
+                            onClick = {
+                                try {
+                                    context.startActivity(
+                                        Intent(
+                                            android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                                            Uri.parse("package:" + context.packageName)
+                                        )
+                                    )
+                                } catch (_: Exception) { }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text(
+                                if (batteryOk) "العمل بالخلفية مسموح ✓ (الإشعارات تصل والتطبيق مغلق)"
+                                else "السماح بالعمل بالخلفية (لتصل الإشعارات والتطبيق مغلق)",
+                                color = Color.Black
                             )
                         }
                     }

@@ -99,7 +99,7 @@ class BroadcastCheckWorker(
                 .build()
             androidx.work.WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 WORK_NAME,
-                androidx.work.ExistingPeriodicWorkPolicy.KEEP,
+                androidx.work.ExistingPeriodicWorkPolicy.UPDATE,
                 request
             )
         }
