@@ -14,6 +14,9 @@ let inMemoryConfig = {
   broadcastMessage: "تم تحديث روابط فحص الآيكلاود وشاومي وقسم الرومات لسرعة مضاعفة.",
   isBroadcastActive: true,
   blogUrl: "https://yaz-blog.blogspot.com/",
+  isMaintenanceMode: false,
+  maintenanceTitle: "سنعود قريباً 🛠️",
+  maintenanceMessage: "نقوم حالياً بأعمال الصيانة والتطوير — سيتم إبلاغكم بكل جديد عبر الإشعارات.",
   adsense: {
     publisherId: "pub-4752417544013096",
     customerId: "9947688120",
