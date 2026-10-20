@@ -12,7 +12,7 @@ const DEFAULTS = {
   broadcastTitle: "تنبيه فني هام 🛠️",
   broadcastMessage: "تم تحديث روابط فحص الآيكلاود وشاومي وقسم الرومات لسرعة مضاعفة.",
   isBroadcastActive: true,
-  blogUrl: "https://yaz-blog.blogspot.com/",
+  blogUrl: "https://yaz-blogg.blogspot.com/",
   isMaintenanceMode: false,
   maintenanceTitle: "سنعود قريباً 🛠️",
   maintenanceMessage: "نقوم حالياً بأعمال الصيانة والتطوير — سيتم إبلاغكم بكل جديد عبر الإشعارات.",

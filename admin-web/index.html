@@ -351,7 +351,7 @@
           </div>
           <div class="hero-panel" id="hero-panel-posts">
             <h3 style="font-size:17px;font-weight:700;">أحدث المنشورات والمقالات</h3>
-            <p style="font-size:12px;color:var(--text-muted);">منشورات المدونة: <a href="https://yaz-blog.blogspot.com/" target="_blank" style="color:var(--primary);font-weight:700;">yaz-blog.blogspot.com</a> — اسحب للعودة للخدمات</p>
+            <p style="font-size:12px;color:var(--text-muted);">منشورات المدونة: <a href="https://yaz-blogg.blogspot.com/" target="_blank" style="color:var(--primary);font-weight:700;">yaz-blogg.blogspot.com</a> — اسحب للعودة للخدمات</p>
             <div id="hero-posts-list"></div>
             <button class="btn btn-primary" style="margin-top:12px;" onclick="switchTab('tab-posts', document.querySelectorAll('.nav-item')[4])"><i class="fa-solid fa-plus"></i> إدارة ونشر المنشورات</button>
           </div>
@@ -522,7 +522,7 @@
     <section id="tab-posts" class="tab-content">
       <div class="card">
         <h3 style="font-size: 18px; font-weight: 700;">نشر مقال / منشور جديد</h3>
-        <p style="font-size: 12px; color: var(--text-muted); margin-bottom:14px;">المدونة الرسمية: <a href="https://yaz-blog.blogspot.com/" target="_blank" style="color: var(--primary);">yaz-blog.blogspot.com</a></p>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom:14px;">المدونة الرسمية: <a href="https://yaz-blogg.blogspot.com/" target="_blank" style="color: var(--primary);">yaz-blogg.blogspot.com</a></p>
         <input type="hidden" id="post-edit-id" value="">
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;">
           <div class="form-group" style="margin:0;"><label>عنوان المقال</label><input type="text" id="post-title" class="form-control" placeholder="عنوان المنشور"></div>
@@ -693,7 +693,7 @@
     <button class="glass-btn" onclick="glassNav('tab-sections', this)"><i class="fa-solid fa-cubes"></i>الأقسام</button>
     <button class="glass-btn" onclick="glassNav('tab-posts', this)"><i class="fa-solid fa-newspaper"></i>المنشورات</button>
     <button class="glass-btn" onclick="glassNav('tab-reports', this)"><i class="fa-solid fa-bug"></i>التقارير</button>
-    <a class="glass-btn" href="https://yaz-blog.blogspot.com/" target="_blank"><i class="fa-solid fa-blog"></i>المدونة</a>
+    <a class="glass-btn" href="https://yaz-blogg.blogspot.com/" target="_blank"><i class="fa-solid fa-blog"></i>المدونة</a>
   </nav>
 
   <script>
@@ -805,7 +805,7 @@
         'tab-updates': ['إدارة الإصدارات والتحديث الإجباري', 'التحكم في قفل التطبيق وطلب التحديث الإجباري والإصدارات'],
         'tab-broadcast': ['بث الإشعارات المباشرة', 'إرسال تنبيهات عاجلة تظهر لجميع الفنيين أعلى الشاشة الرئيسية'],
         'tab-sections': ['إدارة الأقسام والخدمات', 'نشر وتعديل وحذف الأقسام والخدمات'],
-        'tab-posts': ['إدارة المنشورات والمدونة', 'كتابة مقالات الصيانة وربطها بالمدونة yaz-blog.blogspot.com'],
+        'tab-posts': ['إدارة المنشورات والمدونة', 'كتابة مقالات الصيانة وربطها بالمدونة yaz-blogg.blogspot.com'],
         'tab-adsense': ['إعلانات AdMob للتطبيق', 'وحدات البانر والبيني والنيتف والمكافأة ومواضعها'],
         'tab-reports': ['سجل البلاغات والتقارير', 'متابعة تقارير الأعطال والتواصل مع الفنيين'],
         'tab-maintenance': ['وضع الصيانة', 'إيقاف التطبيق مؤقتاً وعرض شاشة سنعود قريباً'],
@@ -994,7 +994,7 @@
     async function savePost() {
       const title = document.getElementById('post-title').value.trim();
       if (!title) return alert('أدخل عنوان المقال');
-      const data = { title, sectionId: document.getElementById('post-section').value, category: document.getElementById('post-category').value, body: document.getElementById('post-body').value.trim(), blogUrl: 'https://yaz-blog.blogspot.com/' };
+      const data = { title, sectionId: document.getElementById('post-section').value, category: document.getElementById('post-category').value, body: document.getElementById('post-body').value.trim(), blogUrl: 'https://yaz-blogg.blogspot.com/' };
       const editId = document.getElementById('post-edit-id').value;
       if (editId) data.id = editId;
       await api('/api/posts', editId ? 'PUT' : 'POST', data);
